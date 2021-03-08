@@ -15,7 +15,7 @@
 		#Chevron
 		#Plus
 		#Minus
-		
+		#Video
 		#_LISTSIZE
 	EndEnumeration
 	
@@ -33,8 +33,7 @@ Module MaterialVector
 	;}
 	
 	;{ Private Procedure Declarations
-	Declare AddPathRoundedBox(x, y, Size, Radius, Flag = #PB_Path_Default)
-	
+	Declare AddPathRoundedBox(x, y, Width, Height, Radius, Flag = #PB_Path_Default)
 	;}
 	
 	Procedure Draw(icon, x, y, Size, FrontColor, BackColor, Style = #Style_Regular)
@@ -50,34 +49,34 @@ Module MaterialVector
 				VectorSourceColor(FrontColor)
 				StrokePath(PathWidth, #PB_Path_Default)
 				MovePathCursor(x, y)
-				Path = CallFunctionFast(Function(icon), PathWidth * 2, PathWidth * 2, Size - PathWidth * 4, FrontColor, BackColor, Style!#Style_Outline|#Style_NoPath)
+				Path = CallFunctionFast(Function(icon),  x + PathWidth * 2, y + PathWidth * 2, Size - PathWidth * 4, FrontColor, BackColor, Style!#Style_Outline|#Style_NoPath)
 			Else
 				AddPathCircle(Half, Half, Half, 0, 360, #PB_Path_Relative)
 				VectorSourceColor(FrontColor)
 				FillPath()
 				MovePathCursor(x, y)
-				Path = CallFunctionFast(Function(icon), PathWidth * 2, PathWidth * 2, Size - PathWidth * 4, BackColor, FrontColor, Style|#Style_NoPath)
+				Path = CallFunctionFast(Function(icon),  x + PathWidth * 2, y + PathWidth * 2, Size - PathWidth * 4, BackColor, FrontColor, Style|#Style_NoPath)
 			EndIf
 			StrokePath(PathWidth, Path)
 		ElseIf Style & #Style_Box
 			If Style & #Style_Outline
-				AddPathRoundedBox(Margin, Margin, Size - Margin * 2, Margin, #PB_Path_Relative)
+				AddPathRoundedBox(Margin, Margin, Size - Margin * 2, Size - Margin * 2, Margin, #PB_Path_Relative)
 				VectorSourceColor(BackColor)
 				FillPath(#PB_Path_Preserve)
 				VectorSourceColor(FrontColor)
 				StrokePath(PathWidth, #PB_Path_Default)
 				MovePathCursor(x, y)
-				Path = CallFunctionFast(Function(icon), PathWidth * 2, PathWidth * 2, Size - PathWidth * 4, FrontColor, BackColor, Style!#Style_Outline|#Style_NoPath)
+				Path = CallFunctionFast(Function(icon), x + PathWidth * 2, y + PathWidth * 2, Size - PathWidth * 4, FrontColor, BackColor, Style!#Style_Outline|#Style_NoPath)
 			Else
-				AddPathRoundedBox(0, 0, Size, PathWidth, #PB_Path_Relative)
+				AddPathRoundedBox(0, 0, Size, Size, PathWidth, #PB_Path_Relative)
 				VectorSourceColor(FrontColor)
 				FillPath()
 				MovePathCursor(x, y)
-				Path = CallFunctionFast(Function(icon), PathWidth * 2, PathWidth * 2, Size - PathWidth * 4, BackColor, FrontColor, Style|#Style_NoPath)
+				Path = CallFunctionFast(Function(icon),  x + PathWidth * 2, y + PathWidth * 2, Size - PathWidth * 4, BackColor, FrontColor, Style|#Style_NoPath)
 			EndIf
 			StrokePath(PathWidth, Path)
 		Else
-			CallFunctionFast(Function(icon), 0, 0, Size, FrontColor, BackColor, Style)
+			CallFunctionFast(Function(icon), x, y, Size, FrontColor, BackColor, Style)
 		EndIf
 		
 	EndProcedure
@@ -100,24 +99,23 @@ Module MaterialVector
 		MovePathCursor(RotationOffsetX,RotationOffsetY, #PB_Path_Relative)
 		ProcedureReturn Rotation
 	EndProcedure
-	
-	Procedure AddPathRoundedBox(x, y, Size, Radius, Flag = #PB_Path_Default)
+		
+	Procedure AddPathRoundedBox(x, y, Width, Height, Radius, Flag = #PB_Path_Default)
 		MovePathCursor(x, y + Radius, Flag)
 		
-		AddPathArc(0, Size - radius, Size, Size - radius, Radius, #PB_Path_Relative)
-		AddPathArc(Size - Radius, 0, Size - Radius, - Size, Radius, #PB_Path_Relative)
-		AddPathArc(0, Radius - Size, -Size, Radius - Size, Radius, #PB_Path_Relative)
-		AddPathArc(Radius - Size, 0, Radius - Size, Size, Radius, #PB_Path_Relative)
+		AddPathArc(0, Height - radius, Width, Height - radius, Radius, #PB_Path_Relative)
+		AddPathArc(Width - Radius, 0, Width - Radius, - Height, Radius, #PB_Path_Relative)
+		AddPathArc(0, Radius - Height, -Width, Radius - Height, Radius, #PB_Path_Relative)
+		AddPathArc(Radius - Width, 0, Radius - Width, Height, Radius, #PB_Path_Relative)
 		ClosePath()
 		
 		MovePathCursor(-x,-y-Radius, Flag)
 	EndProcedure
 	
 	Procedure Arrow(x, y, Size, FrontColor, BackColor, Style)
-		Protected PathWidth.i = Round(Size * 0.1, #PB_Round_Up), Margin.i = PathWidth * 0.5
-		Protected Half.i = Size/2
+		Protected PathWidth.i = Round(Size * 0.1, #PB_Round_Up), Margin.i = PathWidth * 0.5, Half.i = Size * 0.5
 		
-		MovePathCursor(x, y, #PB_Path_Relative)
+		MovePathCursor(x, y)
 		
 		Protected Rotation = Rotation(Style, Size)
 			
@@ -141,7 +139,7 @@ Module MaterialVector
 	Procedure Chevron(x, y, Size, FrontColor, BackColor, Style)
 		Protected PathWidth.i = Round(Size * 0.1, #PB_Round_Up), Margin.i = PathWidth * 0.5,  Half.i = Size * 0.5
 		
-		MovePathCursor(x, y, #PB_Path_Relative)
+		MovePathCursor(x, y)
 		
 		Protected Rotation = Rotation(Style, Size)
 		
@@ -164,29 +162,39 @@ Module MaterialVector
 	Procedure Plus(x, y, Size, FrontColor, BackColor, Style)
 		Protected PathWidth.i = Round(Size * 0.1, #PB_Round_Up),  Half.i = Size * 0.5
 		
-		MovePathCursor(x, y, #PB_Path_Relative)
+		MovePathCursor(x, y)
 		VectorSourceColor(FrontColor)
 		
 		Protected Rotation = Rotation(Style, Size)
 		
-		MovePathCursor(Half - PathWidth, PathWidth, #PB_Path_Relative)
-		AddPathLine(0, Half - PathWidth * 2, #PB_Path_Relative)
-		AddPathLine(PathWidth * 2 - Half, 0, #PB_Path_Relative)
-		AddPathLine(0, PathWidth * 2, #PB_Path_Relative)
-		AddPathLine(Half - PathWidth * 2, 0, #PB_Path_Relative)
-		AddPathLine(0, Half - PathWidth * 2, #PB_Path_Relative)
-		AddPathLine(PathWidth * 2,0, #PB_Path_Relative)
-		AddPathLine(0, PathWidth * 2 - Half , #PB_Path_Relative)
-		AddPathLine(Half - PathWidth * 2, 0, #PB_Path_Relative)
-		AddPathLine(0, - PathWidth * 2, #PB_Path_Relative)
-		AddPathLine(PathWidth * 2 - Half, 0, #PB_Path_Relative)
-		AddPathLine(0, PathWidth * 2 - Half, #PB_Path_Relative)
-		ClosePath()
-		
 		If Style & #Style_Outline
+			
+			MovePathCursor(Half - PathWidth, PathWidth, #PB_Path_Relative)
+			AddPathLine(0, Half - PathWidth * 2, #PB_Path_Relative)
+			AddPathLine(PathWidth * 2 - Half, 0, #PB_Path_Relative)
+			AddPathLine(0, PathWidth * 2, #PB_Path_Relative)
+			AddPathLine(Half - PathWidth * 2, 0, #PB_Path_Relative)
+			AddPathLine(0, Half - PathWidth * 2, #PB_Path_Relative)
+			AddPathLine(PathWidth * 2,0, #PB_Path_Relative)
+			AddPathLine(0, PathWidth * 2 - Half , #PB_Path_Relative)
+			AddPathLine(Half - PathWidth * 2, 0, #PB_Path_Relative)
+			AddPathLine(0, - PathWidth * 2, #PB_Path_Relative)
+			AddPathLine(PathWidth * 2 - Half, 0, #PB_Path_Relative)
+			AddPathLine(0, PathWidth * 2 - Half, #PB_Path_Relative)
+			ClosePath()
+			
 			StrokePath(PathWidth, #PB_Path_Default)
 		Else
-			FillPath()
+			
+			MovePathCursor(Half, PathWidth, #PB_Path_Relative)
+			AddPathLine(0, Size - PathWidth * 2, #PB_Path_Relative)
+			
+			MovePathCursor(PathWidth - Half, PathWidth - Half, #PB_Path_Relative)
+			AddPathLine(Size - PathWidth * 2, 0, #PB_Path_Relative)
+			
+			If Not Style & #Style_NoPath
+				StrokePath(PathWidth, #PB_Path_Default)
+			EndIf
 		EndIf
 		
 		If Rotation
@@ -197,20 +205,61 @@ Module MaterialVector
 	EndProcedure
 	
 	Procedure Minus(x, y, Size, FrontColor, BackColor, Style)
-		Protected PathWidth.i = Round(Size * 0.1, #PB_Round_Up),   Half.i = Size * 0.5
+		Protected PathWidth.i = Round(Size * 0.1, #PB_Round_Up), Half.i = Size * 0.5
 		
-		MovePathCursor(x, y, #PB_Path_Relative)
+		MovePathCursor(x, y)
 		VectorSourceColor(FrontColor)
 		
 		Protected Rotation = Rotation(Style, Size)
 		
-		MovePathCursor(PathWidth, Half - PathWidth, #PB_Path_Relative)
-		AddPathBox(0,0, Size - PathWidth * 2, PathWidth * 2,  #PB_Path_Relative)
-		
 		If Style & #Style_Outline
+			MovePathCursor(PathWidth, Half - PathWidth, #PB_Path_Relative)
+			AddPathBox(0,0, Size - PathWidth * 2, PathWidth * 2,  #PB_Path_Relative)
 			StrokePath(PathWidth, #PB_Path_Default)
 		Else
-			FillPath()
+			MovePathCursor(PathWidth, Half, #PB_Path_Relative)
+			AddPathLine(Size - PathWidth * 2, 0, #PB_Path_Relative)
+
+			If Not Style & #Style_NoPath
+				StrokePath(PathWidth, #PB_Path_Default)
+			EndIf
+		EndIf
+		
+		If Rotation
+			RotateCoordinates(0, 0, -Rotation)
+		EndIf
+		
+		ProcedureReturn #PB_Path_Default
+	EndProcedure
+	
+	Procedure Video(x, y, Size, FrontColor, BackColor, Style)
+		Protected PathWidth.i = Round(Size * 0.1, #PB_Round_Up), Margin.i = PathWidth * 0.5, Half.i = Size * 0.5
+		
+		MovePathCursor(x, y)
+		VectorSourceColor(FrontColor)
+		
+		Protected Rotation = Rotation(Style, Size)
+		
+		MovePathCursor(Size - Margin, PathWidth * 2 + Margin, #PB_Path_Relative)
+		AddPathLine(0, PathWidth * 4, #PB_Path_Relative)
+		AddPathLine(- PathWidth * 2 - Margin, - PathWidth * 2, #PB_Path_Relative)
+		ClosePath()
+		FillPath()
+		
+		If Rotation ; Couldn't figure a way out of this since fillpath reset the cursor position...
+			RotateCoordinates(0, 0, -Rotation)
+		EndIf
+		
+		MovePathCursor(x, y)
+		
+		Rotation(Style, Size)
+		
+		If Style & #Style_Outline
+			AddPathRoundedBox(Margin, PathWidth * 2 + Margin, Size - PathWidth * 3, PathWidth * 4, Margin * 0.33, #PB_Path_Relative)
+			StrokePath(PathWidth, #PB_Path_Default)
+		Else
+			AddPathRoundedBox(0, PathWidth * 2, Size - PathWidth * 2, PathWidth * 5, Margin, #PB_Path_Relative)
+			FillPath(#PB_Path_Winding)
 		EndIf
 		
 		If Rotation
@@ -243,6 +292,7 @@ Module MaterialVector
 	Function(#Chevron) = @Chevron()
 	Function(#Plus) = @Plus()
 	Function(#Minus) = @Minus()
+	Function(#Video) = @Video()
 	
 EndModule
 
@@ -299,6 +349,7 @@ CompilerIf #PB_Compiler_IsMainFile ;Gallery
 	AddGadgetItem(1, -1, "Chevron")
 	AddGadgetItem(1, -1, "Plus")
 	AddGadgetItem(1, -1, "Minus")
+	AddGadgetItem(1, -1, "Video")
 	
 	SetGadgetState(1,0)
 	
@@ -338,7 +389,7 @@ CompilerEndIf
 
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 292
-; FirstLine = 210
-; Folding = f+-
+; CursorPosition = 168
+; FirstLine = 35
+; Folding = PA+
 ; EnableXP
