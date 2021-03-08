@@ -279,13 +279,13 @@ Module MaterialVector
 		Protected Rotation = Rotation(Style, Size)
 		
 		If Style & #Style_Outline
-			MovePathCursor(PathWidth * 2 + Margin, Size - PathWidth * 4, #PB_Path_Relative)
+			MovePathCursor(PathWidth + Margin, Size - PathWidth * 4, #PB_Path_Relative)
 			AddPathLine(0, PathWidth * 2, #PB_Path_Relative)
-			AddPathLine(Size - PathWidth * 5, 0, #PB_Path_Relative)
+			AddPathLine(Size - PathWidth * 3, 0, #PB_Path_Relative)
 			AddPathLine(0, - PathWidth * 2, #PB_Path_Relative)
-			AddPathEllipse(- (Size - PathWidth * 5) * 0.5, Margin * 0.5, (Size - PathWidth * 5) * 0.5 , PathWidth, 180, 360, #PB_Path_Relative)
+			AddPathEllipse(- (Size - PathWidth * 3) * 0.5, Margin * 0.5, (Size - PathWidth * 3) * 0.5 , PathWidth, 180, 360, #PB_Path_Relative)
 			
-			AddPathCircle(- (Size - PathWidth * 5) * 0.5, - PathWidth * 2 - Margin, PathWidth, 0, 360, #PB_Path_Relative)
+			AddPathCircle(- (Size - PathWidth * 3) * 0.5, - PathWidth * 3 - Margin, PathWidth, 0, 360, #PB_Path_Relative)
 			
 			StrokePath(PathWidth, #PB_Path_Default)
 		Else
@@ -306,7 +306,6 @@ Module MaterialVector
 		
 		ProcedureReturn #PB_Path_Default ; returns the correct path flaf for boxes/circled icons
 	EndProcedure
-	
 	
 	Procedure NewIconExample(x, y, Size, FrontColor, BackColor, Style)
 		Protected PathWidth.i = Round(Size * 0.1, #PB_Round_Up) ;< seems to be the correct width to "feel" material design
@@ -430,7 +429,7 @@ CompilerEndIf
 
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 152
-; FirstLine = 46
+; CursorPosition = 287
+; FirstLine = 114
 ; Folding = vk0
 ; EnableXP
