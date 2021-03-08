@@ -13,6 +13,8 @@
 	Enumeration
 		#Arrow
 		#Chevron
+		#Plus
+		#Minus
 		
 		#_LISTSIZE
 	EndEnumeration
@@ -45,8 +47,10 @@ Module MaterialVector
 				AddPathCircle(Half, Half, Half - Margin, 0, 360, #PB_Path_Relative)
 				VectorSourceColor(BackColor)
 				FillPath(#PB_Path_Preserve)
+				VectorSourceColor(FrontColor)
+				StrokePath(PathWidth, #PB_Path_Default)
 				MovePathCursor(x, y)
-				Path = CallFunctionFast(Function(icon), PathWidth * 2, PathWidth * 2, Size - PathWidth * 4, FrontColor, BackColor, Style|#Style_NoPath)
+				Path = CallFunctionFast(Function(icon), PathWidth * 2, PathWidth * 2, Size - PathWidth * 4, FrontColor, BackColor, Style!#Style_Outline|#Style_NoPath)
 			Else
 				AddPathCircle(Half, Half, Half, 0, 360, #PB_Path_Relative)
 				VectorSourceColor(FrontColor)
@@ -60,7 +64,10 @@ Module MaterialVector
 				AddPathRoundedBox(Margin, Margin, Size - Margin * 2, Margin, #PB_Path_Relative)
 				VectorSourceColor(BackColor)
 				FillPath(#PB_Path_Preserve)
-				Path = CallFunctionFast(Function(icon), PathWidth * 2, PathWidth * 2, Size - PathWidth * 4, FrontColor, BackColor, Style|#Style_NoPath)
+				VectorSourceColor(FrontColor)
+				StrokePath(PathWidth, #PB_Path_Default)
+				MovePathCursor(x, y)
+				Path = CallFunctionFast(Function(icon), PathWidth * 2, PathWidth * 2, Size - PathWidth * 4, FrontColor, BackColor, Style!#Style_Outline|#Style_NoPath)
 			Else
 				AddPathRoundedBox(0, 0, Size, PathWidth, #PB_Path_Relative)
 				VectorSourceColor(FrontColor)
@@ -154,33 +161,151 @@ Module MaterialVector
 		ProcedureReturn #PB_Path_RoundCorner|#PB_Path_RoundEnd
 	EndProcedure
 	
+	Procedure Plus(x, y, Size, FrontColor, BackColor, Style)
+		Protected PathWidth.i = Round(Size * 0.1, #PB_Round_Up),  Half.i = Size * 0.5
+		
+		MovePathCursor(x, y, #PB_Path_Relative)
+		VectorSourceColor(FrontColor)
+		
+		Protected Rotation = Rotation(Style, Size)
+		
+		MovePathCursor(Half - PathWidth, PathWidth, #PB_Path_Relative)
+		AddPathLine(0, Half - PathWidth * 2, #PB_Path_Relative)
+		AddPathLine(PathWidth * 2 - Half, 0, #PB_Path_Relative)
+		AddPathLine(0, PathWidth * 2, #PB_Path_Relative)
+		AddPathLine(Half - PathWidth * 2, 0, #PB_Path_Relative)
+		AddPathLine(0, Half - PathWidth * 2, #PB_Path_Relative)
+		AddPathLine(PathWidth * 2,0, #PB_Path_Relative)
+		AddPathLine(0, PathWidth * 2 - Half , #PB_Path_Relative)
+		AddPathLine(Half - PathWidth * 2, 0, #PB_Path_Relative)
+		AddPathLine(0, - PathWidth * 2, #PB_Path_Relative)
+		AddPathLine(PathWidth * 2 - Half, 0, #PB_Path_Relative)
+		AddPathLine(0, PathWidth * 2 - Half, #PB_Path_Relative)
+		ClosePath()
+		
+		If Style & #Style_Outline
+			StrokePath(PathWidth, #PB_Path_Default)
+		Else
+			FillPath()
+		EndIf
+		
+		If Rotation
+			RotateCoordinates(0, 0, -Rotation)
+		EndIf
+		
+		ProcedureReturn #PB_Path_Default
+	EndProcedure
+	
+	Procedure Minus(x, y, Size, FrontColor, BackColor, Style)
+		Protected PathWidth.i = Round(Size * 0.1, #PB_Round_Up),   Half.i = Size * 0.5
+		
+		MovePathCursor(x, y, #PB_Path_Relative)
+		VectorSourceColor(FrontColor)
+		
+		Protected Rotation = Rotation(Style, Size)
+		
+		MovePathCursor(PathWidth, Half - PathWidth, #PB_Path_Relative)
+		AddPathBox(0,0, Size - PathWidth * 2, PathWidth * 2,  #PB_Path_Relative)
+		
+		If Style & #Style_Outline
+			StrokePath(PathWidth, #PB_Path_Default)
+		Else
+			FillPath()
+		EndIf
+		
+		If Rotation
+			RotateCoordinates(0, 0, -Rotation)
+		EndIf
+		
+		ProcedureReturn #PB_Path_Default
+	EndProcedure
+	
 	Procedure NewIconExample(x, y, Size, FrontColor, BackColor, Style)
 		Protected PathWidth.i = Round(Size * 0.1, #PB_Round_Up) ;< seems to be the correct width to "feel" material design
 		
 		MovePathCursor(x, y, #PB_Path_Relative)
+		VectorSourceColor(FrontColor)
 		
 		Protected Rotation = Rotation(Style, Size) ;< call rotation for an automatic setup
 		
 		If Not Style & #Style_NoPath	;< if needed, draw your paths
-			StrokePath(PathWidth, #PB_Path_RoundCorner)
+			StrokePath(PathWidth, #PB_Path_Default)
 		EndIf
 		
 		If Rotation ;< return the output to it's original position
 			RotateCoordinates(0, 0, -Rotation)
 		EndIf
 		
-		ProcedureReturn #PB_Path_RoundCorner ; returns the correct path flaf for boxes/circled icons
+		ProcedureReturn #PB_Path_Default ; returns the correct path flaf for boxes/circled icons
 	EndProcedure
 	
 	Function(#Arrow) = @Arrow()
 	Function(#Chevron) = @Chevron()
+	Function(#Plus) = @Plus()
+	Function(#Minus) = @Minus()
 	
 EndModule
 
+CompilerIf #PB_Compiler_IsMainFile ;Gallery
+	Global FrontColor = RGBA(16, 16, 20, 255), BackColor = RGBA(255, 255, 255, 255)
 
-
-
-
+Procedure Update()
+	Protected Icon = GetGadgetState(1)
+		StartVectorDrawing(CanvasVectorOutput(0))
+		AddPathBox(0, 0, VectorOutputWidth(), VectorOutputHeight())
+		VectorSourceColor(BackColor)
+		FillPath()
+	
+		MaterialVector::Draw(Icon, 10, 10, 16, FrontColor, BackColor)
+		MaterialVector::Draw(Icon, 30, 10, 16, FrontColor, BackColor, MaterialVector::#Style_Outline)
+		MaterialVector::Draw(Icon, 50, 10, 16, FrontColor, BackColor, MaterialVector::#Style_Box|MaterialVector::#Style_Outline)
+		MaterialVector::Draw(Icon, 70, 10, 16, FrontColor, BackColor, MaterialVector::#Style_Box)
+		MaterialVector::Draw(Icon, 90, 10, 16, FrontColor, BackColor, MaterialVector::#Style_Circle|MaterialVector::#Style_Outline)
+		MaterialVector::Draw(Icon, 110, 10, 16, FrontColor, BackColor, MaterialVector::#Style_Circle)
+		
+		MaterialVector::Draw(Icon, 10, 45, 32, FrontColor, BackColor, MaterialVector::#style_rotate_90)
+		MaterialVector::Draw(Icon, 50, 45, 32, FrontColor, BackColor, MaterialVector::#style_rotate_90|MaterialVector::#Style_Outline)
+		MaterialVector::Draw(Icon, 90, 45, 32, FrontColor, BackColor, MaterialVector::#Style_Box|MaterialVector::#Style_Outline|MaterialVector::#style_rotate_90)
+		MaterialVector::Draw(Icon, 130, 45, 32, FrontColor, BackColor, MaterialVector::#Style_Box|MaterialVector::#style_rotate_90)
+		MaterialVector::Draw(Icon, 170, 45, 32, FrontColor, BackColor, MaterialVector::#Style_Circle|MaterialVector::#Style_Outline|MaterialVector::#style_rotate_90)
+		MaterialVector::Draw(Icon, 210, 45, 32, FrontColor, BackColor, MaterialVector::#Style_Circle|MaterialVector::#style_rotate_90)
+		
+		MaterialVector::Draw(Icon, 10, 100, 64, FrontColor, BackColor, MaterialVector::#style_rotate_180)
+		MaterialVector::Draw(Icon, 80, 100, 64, FrontColor, BackColor, MaterialVector::#style_rotate_180|MaterialVector::#Style_Outline)
+		MaterialVector::Draw(Icon, 150, 100, 64, FrontColor, BackColor, MaterialVector::#Style_Box|MaterialVector::#Style_Outline|MaterialVector::#style_rotate_180)
+		MaterialVector::Draw(Icon, 220, 100, 64, FrontColor, BackColor, MaterialVector::#Style_Box|MaterialVector::#style_rotate_180)
+		MaterialVector::Draw(Icon, 290, 100, 64, FrontColor, BackColor, MaterialVector::#Style_Circle|MaterialVector::#Style_Outline|MaterialVector::#style_rotate_180)
+		MaterialVector::Draw(Icon, 360, 100, 64, FrontColor, BackColor, MaterialVector::#Style_Circle|MaterialVector::#style_rotate_180)
+		
+		MaterialVector::Draw(Icon, 10, 200, 96, FrontColor, BackColor, MaterialVector::#style_rotate_270)
+		MaterialVector::Draw(Icon, 120, 200, 96, FrontColor, BackColor, MaterialVector::#style_rotate_270|MaterialVector::#Style_Outline)
+		MaterialVector::Draw(Icon, 230, 200, 96, FrontColor, BackColor, MaterialVector::#Style_Box|MaterialVector::#Style_Outline|MaterialVector::#style_rotate_270)
+		MaterialVector::Draw(Icon, 340, 200, 96, FrontColor, BackColor, MaterialVector::#Style_Box|MaterialVector::#style_rotate_270)
+		MaterialVector::Draw(Icon, 450, 200, 96, FrontColor, BackColor, MaterialVector::#Style_Circle|MaterialVector::#Style_Outline|MaterialVector::#style_rotate_270)
+		MaterialVector::Draw(Icon, 550, 200, 96, FrontColor, BackColor, MaterialVector::#Style_Circle|MaterialVector::#style_rotate_270)
+		StopVectorDrawing()
+	EndProcedure
+	
+	OpenWindow(0, 0, 0, 650, 380, "Material Vector Gallery", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+	SetWindowColor(0, #White)
+	CanvasGadget(0, 0, 40, 650, 340)
+	
+	ComboBoxGadget(1, 10, 10, 120, 20)
+	AddGadgetItem(1, -1, "Arrow")
+	AddGadgetItem(1, -1, "Chevron")
+	AddGadgetItem(1, -1, "Plus")
+	AddGadgetItem(1, -1, "Minus")
+	
+	SetGadgetState(1,0)
+	
+	Update()
+	
+	BindGadgetEvent(1,@Update(), #PB_EventType_Change)
+	
+	Repeat
+		WaitWindowEvent()
+	ForEver
+CompilerEndIf
 
 
 
@@ -208,8 +333,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 140
-; FirstLine = 36
-; Folding = P3
+; CursorPosition = 207
+; FirstLine = 135
+; Folding = f+-
 ; EnableXP
-; UseMainFile = Demo.pb
