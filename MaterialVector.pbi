@@ -248,14 +248,14 @@ EndModule
 
 CompilerIf #PB_Compiler_IsMainFile ;Gallery
 	Global FrontColor = RGBA(16, 16, 20, 255), BackColor = RGBA(255, 255, 255, 255)
-
-Procedure Update()
-	Protected Icon = GetGadgetState(1)
+	
+	Procedure Update()
+		Protected Icon = GetGadgetState(1)
 		StartVectorDrawing(CanvasVectorOutput(0))
 		AddPathBox(0, 0, VectorOutputWidth(), VectorOutputHeight())
 		VectorSourceColor(BackColor)
 		FillPath()
-	
+		
 		MaterialVector::Draw(Icon, 10, 10, 16, FrontColor, BackColor)
 		MaterialVector::Draw(Icon, 30, 10, 16, FrontColor, BackColor, MaterialVector::#Style_Outline)
 		MaterialVector::Draw(Icon, 50, 10, 16, FrontColor, BackColor, MaterialVector::#Style_Box|MaterialVector::#Style_Outline)
@@ -282,13 +282,17 @@ Procedure Update()
 		MaterialVector::Draw(Icon, 230, 200, 96, FrontColor, BackColor, MaterialVector::#Style_Box|MaterialVector::#Style_Outline|MaterialVector::#style_rotate_270)
 		MaterialVector::Draw(Icon, 340, 200, 96, FrontColor, BackColor, MaterialVector::#Style_Box|MaterialVector::#style_rotate_270)
 		MaterialVector::Draw(Icon, 450, 200, 96, FrontColor, BackColor, MaterialVector::#Style_Circle|MaterialVector::#Style_Outline|MaterialVector::#style_rotate_270)
-		MaterialVector::Draw(Icon, 550, 200, 96, FrontColor, BackColor, MaterialVector::#Style_Circle|MaterialVector::#style_rotate_270)
+		MaterialVector::Draw(Icon, 560, 200, 96, FrontColor, BackColor, MaterialVector::#Style_Circle|MaterialVector::#style_rotate_270)
 		StopVectorDrawing()
 	EndProcedure
 	
-	OpenWindow(0, 0, 0, 650, 380, "Material Vector Gallery", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+	Procedure Close()
+		End
+	EndProcedure
+	
+	OpenWindow(0, 0, 0, 670, 360, "Material Vector Gallery", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
 	SetWindowColor(0, #White)
-	CanvasGadget(0, 0, 40, 650, 340)
+	CanvasGadget(0, 0, 40, 670, 320)
 	
 	ComboBoxGadget(1, 10, 10, 120, 20)
 	AddGadgetItem(1, -1, "Arrow")
@@ -301,6 +305,7 @@ Procedure Update()
 	Update()
 	
 	BindGadgetEvent(1,@Update(), #PB_EventType_Change)
+	BindEvent(#PB_Event_CloseWindow, @Close())
 	
 	Repeat
 		WaitWindowEvent()
@@ -333,7 +338,7 @@ CompilerEndIf
 
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 207
-; FirstLine = 135
+; CursorPosition = 292
+; FirstLine = 210
 ; Folding = f+-
 ; EnableXP
