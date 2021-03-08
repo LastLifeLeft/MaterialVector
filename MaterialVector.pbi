@@ -16,6 +16,7 @@
 		#Plus
 		#Minus
 		#Video
+		#Person
 		#_LISTSIZE
 	EndEnumeration
 	
@@ -149,7 +150,7 @@ Module MaterialVector
 		VectorSourceColor(FrontColor)
 		
 		If Not Style & #Style_NoPath
-			StrokePath(PathWidth, #PB_Path_RoundCorner)
+			StrokePath(PathWidth, #PB_Path_RoundCorner|#PB_Path_RoundEnd)
 		EndIf
 		
 		If Rotation
@@ -259,7 +260,7 @@ Module MaterialVector
 			StrokePath(PathWidth, #PB_Path_Default)
 		Else
 			AddPathRoundedBox(0, PathWidth * 2, Size - PathWidth * 2, PathWidth * 5, Margin, #PB_Path_Relative)
-			FillPath(#PB_Path_Winding)
+			FillPath()
 		EndIf
 		
 		If Rotation
@@ -267,12 +268,50 @@ Module MaterialVector
 		EndIf
 		
 		ProcedureReturn #PB_Path_Default
+	EndProcedure	
+	
+	Procedure Person(x, y, Size, FrontColor, BackColor, Style)
+		Protected PathWidth.i = Round(Size * 0.1, #PB_Round_Up), Margin.i = PathWidth * 0.5, Half.i = Size * 0.5
+		
+		MovePathCursor(x, y)
+		VectorSourceColor(FrontColor)
+		
+		Protected Rotation = Rotation(Style, Size)
+		
+		If Style & #Style_Outline
+			MovePathCursor(PathWidth * 2 + Margin, Size - PathWidth * 4, #PB_Path_Relative)
+			AddPathLine(0, PathWidth * 2, #PB_Path_Relative)
+			AddPathLine(Size - PathWidth * 5, 0, #PB_Path_Relative)
+			AddPathLine(0, - PathWidth * 2, #PB_Path_Relative)
+			AddPathEllipse(- (Size - PathWidth * 5) * 0.5, Margin * 0.5, (Size - PathWidth * 5) * 0.5 , PathWidth, 180, 360, #PB_Path_Relative)
+			
+			AddPathCircle(- (Size - PathWidth * 5) * 0.5, - PathWidth * 2 - Margin, PathWidth, 0, 360, #PB_Path_Relative)
+			
+			StrokePath(PathWidth, #PB_Path_Default)
+		Else
+			MovePathCursor(PathWidth + Margin, Size - PathWidth * 4, #PB_Path_Relative)
+			AddPathLine(0, PathWidth * 2, #PB_Path_Relative)
+			AddPathLine(Size - PathWidth * 3, 0, #PB_Path_Relative)
+			AddPathLine(0, - PathWidth * 2, #PB_Path_Relative)
+			AddPathEllipse(- (Size - PathWidth * 3) * 0.5, 0, (Size - PathWidth * 3) * 0.5 , PathWidth, 180, 360, #PB_Path_Relative)
+			
+			AddPathCircle(- (Size - PathWidth * 3) * 0.5, - PathWidth * 3, PathWidth + Margin, 0, 360, #PB_Path_Relative)
+
+			FillPath(#PB_Path_Winding)
+		EndIf
+		
+		If Rotation
+			RotateCoordinates(0, 0, -Rotation)
+		EndIf
+		
+		ProcedureReturn #PB_Path_Default ; returns the correct path flaf for boxes/circled icons
 	EndProcedure
+	
 	
 	Procedure NewIconExample(x, y, Size, FrontColor, BackColor, Style)
 		Protected PathWidth.i = Round(Size * 0.1, #PB_Round_Up) ;< seems to be the correct width to "feel" material design
 		
-		MovePathCursor(x, y, #PB_Path_Relative)
+		MovePathCursor(x, y)
 		VectorSourceColor(FrontColor)
 		
 		Protected Rotation = Rotation(Style, Size) ;< call rotation for an automatic setup
@@ -293,6 +332,7 @@ Module MaterialVector
 	Function(#Plus) = @Plus()
 	Function(#Minus) = @Minus()
 	Function(#Video) = @Video()
+	Function(#Person) = @Person()
 	
 EndModule
 
@@ -350,6 +390,7 @@ CompilerIf #PB_Compiler_IsMainFile ;Gallery
 	AddGadgetItem(1, -1, "Plus")
 	AddGadgetItem(1, -1, "Minus")
 	AddGadgetItem(1, -1, "Video")
+	AddGadgetItem(1, -1, "Person")
 	
 	SetGadgetState(1,0)
 	
@@ -389,7 +430,7 @@ CompilerEndIf
 
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 168
-; FirstLine = 35
-; Folding = PA+
+; CursorPosition = 152
+; FirstLine = 46
+; Folding = vk0
 ; EnableXP
