@@ -15,8 +15,11 @@
 		#Arrow
 		#Chevron
 		#Minus
+		#Pause
 		#Person
+		#Play
 		#Plus
+		#Skip
 		#Video
 		#_LISTSIZE
 	EndEnumeration
@@ -43,6 +46,9 @@ Module MaterialVector
 	Declare Person(x, y, Size, FrontColor, BackColor, Style)
 	Declare Plus(x, y, Size, FrontColor, BackColor, Style)
 	Declare Video(x, y, Size, FrontColor, BackColor, Style)
+	Declare Pause(x, y, Size, FrontColor, BackColor, Style)
+	Declare Play(x, y, Size, FrontColor, BackColor, Style)
+	Declare Skip(x, y, Size, FrontColor, BackColor, Style)
 	;}
 	
 	; Public Procedures
@@ -105,7 +111,7 @@ Module MaterialVector
 	
 	; Private procedures
 	;Tools
-	Procedure Rotation(Style, Size) ; There has to be a better solution, I can't understand why I can't do it with sin and cos...
+	Procedure Rotation(Style, Size) ; There has to be a better solution, but I can't figure it out with sin and cos... This is most likely a brainfart, come back to it later
 		Protected Rotation, RotationOffsetX, RotationOffsetY
 		If Style & #style_rotate_90
 			Rotation = 90
@@ -318,13 +324,89 @@ Module MaterialVector
 		ProcedureReturn #PB_Path_Default
 	EndProcedure	
 	
+	Procedure Pause(x, y, Size, FrontColor, BackColor, Style)
+		Protected PathWidth.i = Round(Size * 0.1, #PB_Round_Up), Margin.i = PathWidth * 0.5
+		
+		MovePathCursor(x, y)
+		VectorSourceColor(FrontColor)
+		
+		Protected Rotation = Rotation(Style, Size)
+		
+		AddPathBox(Round((Size - PathWidth *6) * 0.5, #PB_Round_Nearest), 0, PathWidth * 2, Size, #PB_Path_Relative)
+		AddPathBox(PathWidth * 4, 0, PathWidth * 2, Size, #PB_Path_Relative)
+		
+		VectorSourceColor(FrontColor)
+		FillPath()
+		
+		If Rotation
+			RotateCoordinates(0, 0, -Rotation)
+		EndIf
+		
+		ProcedureReturn #PB_Path_Default
+	EndProcedure	
+	
+	Procedure Play(x, y, Size, FrontColor, BackColor, Style)
+		Protected PathWidth.i = Round(Size * 0.1, #PB_Round_Up), Half.i = Size * 0.5
+		
+		MovePathCursor(x, y)
+		VectorSourceColor(FrontColor)
+		
+		Protected Rotation = Rotation(Style, Size)
+		
+		MovePathCursor(PathWidth * 2, 0, #PB_Path_Relative)
+		AddPathLine(0, Size, #PB_Path_Relative)
+		AddPathLine(PathWidth * 6, -Half, #PB_Path_Relative)
+		ClosePath()
+		
+		VectorSourceColor(FrontColor)
+		FillPath()
+		
+		If Rotation
+			RotateCoordinates(0, 0, -Rotation)
+		EndIf
+		
+		ProcedureReturn #PB_Path_Default
+	EndProcedure	
+	
+	Procedure Skip(x, y, Size, FrontColor, BackColor, Style)
+		Protected PathWidth.i = Round(Size * 0.1, #PB_Round_Up), Half.i = Size * 0.5
+
+		MovePathCursor(x, y)
+		VectorSourceColor(FrontColor)
+		
+		Protected Rotation = Rotation(Style, Size)
+		
+		MovePathCursor(PathWidth, 0, #PB_Path_Relative)
+		AddPathLine(0, Size, #PB_Path_Relative)
+		AddPathLine(PathWidth * 5, -Half, #PB_Path_Relative)
+		ClosePath()
+		AddPathBox(PathWidth * 5, 0, PathWidth * 2, Size, #PB_Path_Relative)
+		
+		VectorSourceColor(FrontColor)
+		FillPath(#PB_Path_Winding)
+		
+		If Not Style & #Style_NoPath
+			StrokePath(PathWidth, #PB_Path_Default)
+		EndIf
+		
+		If Rotation
+			RotateCoordinates(0, 0, -Rotation)
+		EndIf
+		
+		ProcedureReturn #PB_Path_Default
+	EndProcedure	
+	
 	Function(#Arrow) = @Arrow()
 	Function(#Chevron) = @Chevron()
 	Function(#Plus) = @Plus()
 	Function(#Minus) = @Minus()
 	Function(#Video) = @Video()
 	Function(#Person) = @Person()
+	Function(#Pause) = @Pause()
+	Function(#Play) = @Play()
+	Function(#Skip) = @Skip()
 	
+	CompilerIf #False
 	;Build your own 
 	Procedure NewIconExample(x, y, Size, FrontColor, BackColor, Style)
 		Protected PathWidth.i = Round(Size * 0.1, #PB_Round_Up) ;< seems to be the correct width to "feel" material design
@@ -344,7 +426,7 @@ Module MaterialVector
 		
 		ProcedureReturn #PB_Path_Default ; returns the correct path flaf for boxes/circled icons
 	EndProcedure
-	
+	CompilerEndIf
 EndModule
 
 CompilerIf #PB_Compiler_IsMainFile ;Gallery
@@ -399,10 +481,12 @@ CompilerIf #PB_Compiler_IsMainFile ;Gallery
 	AddGadgetItem(1, -1, "Arrow")
 	AddGadgetItem(1, -1, "Chevron")
 	AddGadgetItem(1, -1, "Minus")
+	AddGadgetItem(1, -1, "Pause")
 	AddGadgetItem(1, -1, "Person")
+	AddGadgetItem(1, -1, "Play")
 	AddGadgetItem(1, -1, "Plus")
+	AddGadgetItem(1, -1, "Skip")
 	AddGadgetItem(1, -1, "Video")
-	
 	SetGadgetState(1,0)
 	
 	Update()
@@ -441,6 +525,7 @@ CompilerEndIf
 
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 3
-; Folding = PAk
+; CursorPosition = 488
+; FirstLine = 96
+; Folding = PBY6
 ; EnableXP
