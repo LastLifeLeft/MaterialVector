@@ -1,13 +1,14 @@
 ﻿DeclareModule MaterialVector
 	EnumerationBinary
 		#Style_Regular = 0
-		#Style_Outline
+		#Style_Outline = 65536						; The first 16 bits shall stay unused, it'll help MaterialVector to be integrated in other libraries
 		#Style_Circle
 		#Style_Box
 		
 		#style_rotate_90
 		#style_rotate_180
 		#style_rotate_270
+		
 	EndEnumeration
 	
 	Enumeration
@@ -101,7 +102,6 @@ Module MaterialVector
 		
 		MovePathCursor(-x,-y-Radius, Flag)
 	EndProcedure
-	
 	
 	; Private procedures
 	;Tools
@@ -208,7 +208,7 @@ Module MaterialVector
 		Protected Rotation = Rotation(Style, Size)
 		
 		If Style & #Style_Outline
-			MovePathCursor(PathWidth + Margin, Size - PathWidth * 4, #PB_Path_Relative)
+			MovePathCursor(PathWidth + Margin, Size - PathWidth * 3, #PB_Path_Relative)
 			AddPathLine(0, PathWidth * 2, #PB_Path_Relative)
 			AddPathLine(Size - PathWidth * 3, 0, #PB_Path_Relative)
 			AddPathLine(0, - PathWidth * 2, #PB_Path_Relative)
@@ -218,7 +218,7 @@ Module MaterialVector
 			
 			StrokePath(PathWidth, #PB_Path_Default)
 		Else
-			MovePathCursor(PathWidth + Margin, Size - PathWidth * 4, #PB_Path_Relative)
+			MovePathCursor(PathWidth + Margin, Size - PathWidth * 3, #PB_Path_Relative)
 			AddPathLine(0, PathWidth * 2, #PB_Path_Relative)
 			AddPathLine(Size - PathWidth * 3, 0, #PB_Path_Relative)
 			AddPathLine(0, - PathWidth * 2, #PB_Path_Relative)
@@ -441,7 +441,6 @@ CompilerEndIf
 
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 22
-; FirstLine = 6
+; CursorPosition = 3
 ; Folding = PAk
 ; EnableXP
