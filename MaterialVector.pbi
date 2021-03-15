@@ -161,7 +161,7 @@ Module MaterialVector
 		
 		Protected Rotation = Rotation(Style, Size)
 		
-		MovePathCursor(Margin, Half + PathWidth + Margin, #PB_Path_Relative)
+		MovePathCursor(Margin, (Size - (Margin - Half)) / 2, #PB_Path_Relative)
 		AddPathLine(Half - Margin, Margin - Half, #PB_Path_Relative)
 		AddPathLine(Half - Margin,	Half - Margin, #PB_Path_Relative)
 		VectorSourceColor(FrontColor)
@@ -487,7 +487,7 @@ CompilerIf #PB_Compiler_IsMainFile ;Gallery
 	AddGadgetItem(1, -1, "Plus")
 	AddGadgetItem(1, -1, "Skip")
 	AddGadgetItem(1, -1, "Video")
-	SetGadgetState(1,0)
+	SetGadgetState(1, 1)
 	
 	Update()
 	
@@ -525,7 +525,7 @@ CompilerEndIf
 
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 488
-; FirstLine = 96
-; Folding = PBY6
+; CursorPosition = 398
+; FirstLine = 109
+; Folding = PFw6
 ; EnableXP
