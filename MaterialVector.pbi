@@ -14,6 +14,7 @@
 	Enumeration
 		#Accessibility
 		#Arrow
+		#Camera
 		#Chevron
 		#Minus
 		#Music
@@ -42,17 +43,19 @@ Module MaterialVector
 	
 	;{ Private Procedure Declarations
 	Declare Rotation(Style, Size)
+	
 	Declare Accessibility(x, y, Size, FrontColor, BackColor, Style)
 	Declare Arrow(x, y, Size, FrontColor, BackColor, Style)
+	Declare Camera(x, y, Size, FrontColor, BackColor, Style)
 	Declare Chevron(x, y, Size, FrontColor, BackColor, Style)
 	Declare Minus(x, y, Size, FrontColor, BackColor, Style)
 	Declare Music(x, y, Size, FrontColor, BackColor, Style)
 	Declare Person(x, y, Size, FrontColor, BackColor, Style)
 	Declare Plus(x, y, Size, FrontColor, BackColor, Style)
-	Declare Video(x, y, Size, FrontColor, BackColor, Style)
 	Declare Pause(x, y, Size, FrontColor, BackColor, Style)
 	Declare Play(x, y, Size, FrontColor, BackColor, Style)
 	Declare Skip(x, y, Size, FrontColor, BackColor, Style)
+	Declare Video(x, y, Size, FrontColor, BackColor, Style)
 	;}
 	
 	; Public Procedures
@@ -189,6 +192,43 @@ Module MaterialVector
 		
 		ProcedureReturn #PB_Path_Default
 	EndProcedure
+	
+	Procedure Camera(x, y, Size, FrontColor, BackColor, Style)
+		Protected PathWidth.i = Round(Size * 0.1, #PB_Round_Up), Margin.i = PathWidth * 0.5, Half.i = Size * 0.5
+		
+		MovePathCursor(x, y)
+		VectorSourceColor(FrontColor)
+		
+		Protected Rotation = Rotation(Style, Size)
+		
+		MovePathCursor(Size - Margin, PathWidth * 2 + Margin, #PB_Path_Relative)
+		AddPathLine(0, PathWidth * 4, #PB_Path_Relative)
+		AddPathLine(- PathWidth * 2 - Margin, - PathWidth * 2, #PB_Path_Relative)
+		ClosePath()
+		FillPath()
+		
+		If Rotation ; Couldn't figure a way out of this since fillpath reset the cursor position...
+			RotateCoordinates(0, 0, -Rotation)
+		EndIf
+		
+		MovePathCursor(x, y)
+		
+		Rotation(Style, Size)
+		
+		If Style & #Style_Outline
+			AddPathRoundedBox(Margin, PathWidth * 2 + Margin, Size - PathWidth * 3, PathWidth * 4, Margin * 0.33, #PB_Path_Relative)
+			StrokePath(PathWidth, #PB_Path_Default)
+		Else
+			AddPathRoundedBox(0, PathWidth * 2, Size - PathWidth * 2, PathWidth * 5, Margin, #PB_Path_Relative)
+			FillPath()
+		EndIf
+		
+		If Rotation
+			RotateCoordinates(0, 0, -Rotation)
+		EndIf
+		
+		ProcedureReturn #PB_Path_Default
+	EndProcedure	
 	
 	Procedure Chevron(x, y, Size, FrontColor, BackColor, Style)
 		Protected PathWidth.i = Round(Size * 0.1, #PB_Round_Up), Margin.i = PathWidth * 0.5,  Half.i = Size * 0.5
@@ -352,43 +392,6 @@ Module MaterialVector
 		ProcedureReturn #PB_Path_Default
 	EndProcedure
 	
-	Procedure Video(x, y, Size, FrontColor, BackColor, Style)
-		Protected PathWidth.i = Round(Size * 0.1, #PB_Round_Up), Margin.i = PathWidth * 0.5, Half.i = Size * 0.5
-		
-		MovePathCursor(x, y)
-		VectorSourceColor(FrontColor)
-		
-		Protected Rotation = Rotation(Style, Size)
-		
-		MovePathCursor(Size - Margin, PathWidth * 2 + Margin, #PB_Path_Relative)
-		AddPathLine(0, PathWidth * 4, #PB_Path_Relative)
-		AddPathLine(- PathWidth * 2 - Margin, - PathWidth * 2, #PB_Path_Relative)
-		ClosePath()
-		FillPath()
-		
-		If Rotation ; Couldn't figure a way out of this since fillpath reset the cursor position...
-			RotateCoordinates(0, 0, -Rotation)
-		EndIf
-		
-		MovePathCursor(x, y)
-		
-		Rotation(Style, Size)
-		
-		If Style & #Style_Outline
-			AddPathRoundedBox(Margin, PathWidth * 2 + Margin, Size - PathWidth * 3, PathWidth * 4, Margin * 0.33, #PB_Path_Relative)
-			StrokePath(PathWidth, #PB_Path_Default)
-		Else
-			AddPathRoundedBox(0, PathWidth * 2, Size - PathWidth * 2, PathWidth * 5, Margin, #PB_Path_Relative)
-			FillPath()
-		EndIf
-		
-		If Rotation
-			RotateCoordinates(0, 0, -Rotation)
-		EndIf
-		
-		ProcedureReturn #PB_Path_Default
-	EndProcedure	
-	
 	Procedure Pause(x, y, Size, FrontColor, BackColor, Style)
 		Protected PathWidth.i = Round(Size * 0.1, #PB_Round_Up), Margin.i = PathWidth * 0.5
 		
@@ -461,17 +464,52 @@ Module MaterialVector
 		ProcedureReturn #PB_Path_Default
 	EndProcedure	
 	
+	Procedure Video(x, y, Size, FrontColor, BackColor, Style)
+		Protected PathWidth.i = Round(Size * 0.1, #PB_Round_Up), Margin.i = PathWidth * 0.5, Half.i = Size * 0.5
+		
+		MovePathCursor(x, y)
+		VectorSourceColor(FrontColor)
+		
+		Protected Rotation = Rotation(Style, Size)
+		
+		AddPathBox((Size - (Size - PathWidth)) * 0.5, (Size - PathWidth * 9) * 0.5, Size - PathWidth , PathWidth * 9, #PB_Path_Relative)
+		AddPathBox(PathWidth, 0, PathWidth, PathWidth, #PB_Path_Relative)
+		AddPathBox(0, PathWidth * 2, PathWidth, PathWidth, #PB_Path_Relative)
+		AddPathBox(0, PathWidth * 2, PathWidth, PathWidth, #PB_Path_Relative)
+		AddPathBox(0, PathWidth * 2, PathWidth, PathWidth, #PB_Path_Relative)
+		AddPathBox(0, PathWidth * 2, PathWidth, PathWidth, #PB_Path_Relative)
+		
+		AddPathBox(Size - PathWidth * 4, 0, PathWidth, PathWidth, #PB_Path_Relative)
+		AddPathBox(0, PathWidth * - 2, PathWidth, PathWidth, #PB_Path_Relative)
+		AddPathBox(0, PathWidth * - 2, PathWidth, PathWidth, #PB_Path_Relative)
+		AddPathBox(0, PathWidth * - 2, PathWidth, PathWidth, #PB_Path_Relative)
+		AddPathBox(0, PathWidth * - 2, PathWidth, PathWidth, #PB_Path_Relative)
+			
+		If Style & #Style_Outline
+			AddPathBox(- Size + PathWidth * 6, PathWidth, Size - PathWidth * 7, PathWidth * 7, #PB_Path_Relative)
+		EndIf
+		
+		FillPath()
+		
+		If Rotation
+			RotateCoordinates(0, 0, -Rotation)
+		EndIf
+		
+		ProcedureReturn #PB_Path_Default
+	EndProcedure
+	
 	Function(#Accessibility) = @Accessibility()
 	Function(#Arrow) = @Arrow()
+	Function(#Camera) = @Camera()
 	Function(#Chevron) = @Chevron()
 	Function(#Plus) = @Plus()
 	Function(#Minus) = @Minus()
 	Function(#Music) = @Music()
-	Function(#Video) = @Video()
 	Function(#Person) = @Person()
 	Function(#Pause) = @Pause()
 	Function(#Play) = @Play()
 	Function(#Skip) = @Skip()
+	Function(#Video) = @Video()
 	
 	CompilerIf #False
 	;Build your own 
@@ -547,6 +585,7 @@ CompilerIf #PB_Compiler_IsMainFile ;Gallery
 	ComboBoxGadget(1, 10, 10, 120, 20)
 	AddGadgetItem(1, -1, "Accessibility")
 	AddGadgetItem(1, -1, "Arrow")
+	AddGadgetItem(1, -1, "Camera")
 	AddGadgetItem(1, -1, "Chevron")
 	AddGadgetItem(1, -1, "Minus")
 	AddGadgetItem(1, -1, "Music")
@@ -556,7 +595,7 @@ CompilerIf #PB_Compiler_IsMainFile ;Gallery
 	AddGadgetItem(1, -1, "Plus")
 	AddGadgetItem(1, -1, "Skip")
 	AddGadgetItem(1, -1, "Video")
- 	SetGadgetState(1, 4)
+ 	SetGadgetState(1, 11)
 	
 	Update()
 	
@@ -594,7 +633,7 @@ CompilerEndIf
 
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 259
-; FirstLine = 110
-; Folding = PDAn
+; CursorPosition = 477
+; FirstLine = 84
+; Folding = PBAP-
 ; EnableXP
