@@ -12,6 +12,7 @@
 	EndEnumeration
 	
 	Enumeration
+		#Accessibility
 		#Arrow
 		#Chevron
 		#Minus
@@ -49,6 +50,7 @@ Module MaterialVector
 	Declare Pause(x, y, Size, FrontColor, BackColor, Style)
 	Declare Play(x, y, Size, FrontColor, BackColor, Style)
 	Declare Skip(x, y, Size, FrontColor, BackColor, Style)
+	Declare Accessibility(x, y, Size, FrontColor, BackColor, Style)
 	;}
 	
 	; Public Procedures
@@ -396,6 +398,39 @@ Module MaterialVector
 		ProcedureReturn #PB_Path_Default
 	EndProcedure	
 	
+	Procedure Accessibility(x, y, Size, FrontColor, BackColor, Style)
+		Protected PathWidth.i = Round(Size * 0.1, #PB_Round_Up), Margin.i = PathWidth * 0.5, Half.i = Size * 0.5
+		
+		MovePathCursor(x, y)
+		VectorSourceColor(FrontColor)
+		
+		Protected Rotation = Rotation(Style, Size)
+		
+		MovePathCursor(PathWidth, PathWidth * 3, #PB_Path_Relative)
+		AddPathLine(7 * PathWidth, 0, #PB_Path_Relative)
+		AddPathLine(0, PathWidth, #PB_Path_Relative)
+		AddPathLine(-2 * PathWidth, 0, #PB_Path_Relative)
+		AddPathLine(0, Half + PathWidth, #PB_Path_Relative)
+		AddPathLine(- PathWidth, 0, #PB_Path_Relative)
+		AddPathLine(0, -2.5 * PathWidth, #PB_Path_Relative)
+		AddPathLine(- PathWidth, 0, #PB_Path_Relative)
+		AddPathLine(0, 2.5 * PathWidth, #PB_Path_Relative)
+		AddPathLine(- PathWidth, 0, #PB_Path_Relative)
+		AddPathLine(0, - Half - PathWidth, #PB_Path_Relative)
+		AddPathLine(-2 * PathWidth, 0, #PB_Path_Relative)
+		
+		AddPathCircle(PathWidth * 3.5 , PathWidth * - 2.5, PathWidth, 0, 360, #PB_Path_Relative)
+		
+		FillPath(#PB_Path_Winding)
+		
+		If Rotation
+			RotateCoordinates(0, 0, -Rotation)
+		EndIf
+		
+		ProcedureReturn #PB_Path_Default
+	EndProcedure
+	
+	Function(#Accessibility) = @Accessibility()
 	Function(#Arrow) = @Arrow()
 	Function(#Chevron) = @Chevron()
 	Function(#Plus) = @Plus()
@@ -478,6 +513,7 @@ CompilerIf #PB_Compiler_IsMainFile ;Gallery
 	CanvasGadget(0, 0, 40, 670, 320)
 	
 	ComboBoxGadget(1, 10, 10, 120, 20)
+	AddGadgetItem(1, -1, "Accessibility")
 	AddGadgetItem(1, -1, "Arrow")
 	AddGadgetItem(1, -1, "Chevron")
 	AddGadgetItem(1, -1, "Minus")
@@ -487,7 +523,7 @@ CompilerIf #PB_Compiler_IsMainFile ;Gallery
 	AddGadgetItem(1, -1, "Plus")
 	AddGadgetItem(1, -1, "Skip")
 	AddGadgetItem(1, -1, "Video")
-	SetGadgetState(1, 1)
+ 	SetGadgetState(1, 0)
 	
 	Update()
 	
@@ -525,7 +561,7 @@ CompilerEndIf
 
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 398
-; FirstLine = 109
-; Folding = PFw6
+; CursorPosition = 422
+; FirstLine = 147
+; Folding = PVwz
 ; EnableXP
