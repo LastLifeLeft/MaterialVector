@@ -16,6 +16,7 @@
 		#Arrow
 		#Chevron
 		#Minus
+		#Music
 		#Pause
 		#Person
 		#Play
@@ -41,16 +42,17 @@ Module MaterialVector
 	
 	;{ Private Procedure Declarations
 	Declare Rotation(Style, Size)
+	Declare Accessibility(x, y, Size, FrontColor, BackColor, Style)
 	Declare Arrow(x, y, Size, FrontColor, BackColor, Style)
 	Declare Chevron(x, y, Size, FrontColor, BackColor, Style)
 	Declare Minus(x, y, Size, FrontColor, BackColor, Style)
+	Declare Music(x, y, Size, FrontColor, BackColor, Style)
 	Declare Person(x, y, Size, FrontColor, BackColor, Style)
 	Declare Plus(x, y, Size, FrontColor, BackColor, Style)
 	Declare Video(x, y, Size, FrontColor, BackColor, Style)
 	Declare Pause(x, y, Size, FrontColor, BackColor, Style)
 	Declare Play(x, y, Size, FrontColor, BackColor, Style)
 	Declare Skip(x, y, Size, FrontColor, BackColor, Style)
-	Declare Accessibility(x, y, Size, FrontColor, BackColor, Style)
 	;}
 	
 	; Public Procedures
@@ -132,6 +134,38 @@ Module MaterialVector
 	EndProcedure
 	
 	;Icons
+	Procedure Accessibility(x, y, Size, FrontColor, BackColor, Style)
+		Protected PathWidth.i = Round(Size * 0.1, #PB_Round_Up), Margin.i = PathWidth * 0.5, Half.i = Size * 0.5
+		
+		MovePathCursor(x, y)
+		VectorSourceColor(FrontColor)
+		
+		Protected Rotation = Rotation(Style, Size)
+		
+		MovePathCursor(PathWidth, PathWidth * 3, #PB_Path_Relative)
+		AddPathLine(7 * PathWidth, 0, #PB_Path_Relative)
+		AddPathLine(0, PathWidth, #PB_Path_Relative)
+		AddPathLine(-2 * PathWidth, 0, #PB_Path_Relative)
+		AddPathLine(0, Half + PathWidth, #PB_Path_Relative)
+		AddPathLine(- PathWidth, 0, #PB_Path_Relative)
+		AddPathLine(0, -2.5 * PathWidth, #PB_Path_Relative)
+		AddPathLine(- PathWidth, 0, #PB_Path_Relative)
+		AddPathLine(0, 2.5 * PathWidth, #PB_Path_Relative)
+		AddPathLine(- PathWidth, 0, #PB_Path_Relative)
+		AddPathLine(0, - Half - PathWidth, #PB_Path_Relative)
+		AddPathLine(-2 * PathWidth, 0, #PB_Path_Relative)
+		
+		AddPathCircle(PathWidth * 3.5 , PathWidth * - 2.5, PathWidth, 0, 360, #PB_Path_Relative)
+		
+		FillPath(#PB_Path_Winding)
+		
+		If Rotation
+			RotateCoordinates(0, 0, -Rotation)
+		EndIf
+		
+		ProcedureReturn #PB_Path_Default
+	EndProcedure
+	
 	Procedure Arrow(x, y, Size, FrontColor, BackColor, Style)
 		Protected PathWidth.i = Round(Size * 0.1, #PB_Round_Up), Margin.i = PathWidth * 0.5, Half.i = Size * 0.5
 		
@@ -198,6 +232,35 @@ Module MaterialVector
 			If Not Style & #Style_NoPath
 				StrokePath(PathWidth, #PB_Path_Default)
 			EndIf
+		EndIf
+		
+		If Rotation
+			RotateCoordinates(0, 0, -Rotation)
+		EndIf
+		
+		ProcedureReturn #PB_Path_Default
+	EndProcedure
+	
+	Procedure Music(x, y, Size, FrontColor, BackColor, Style)
+		Protected PathWidth.i = Round(Size * 0.1, #PB_Round_Up), Margin.i = PathWidth * 0.5, Half.i = Size * 0.5
+		
+		MovePathCursor(x, y)
+		VectorSourceColor(FrontColor)
+		
+		Protected Rotation = Rotation(Style, Size)
+		
+		If Style & #Style_Outline
+			MovePathCursor(Half, PathWidth , #PB_Path_Relative)
+ 			AddPathLine(PathWidth * 3, 0, #PB_Path_Relative)
+ 			MovePathCursor(-PathWidth * 2.5 , 0, #PB_Path_Relative)
+ 			AddPathLine(0, PathWidth * 4.5, #PB_Path_Relative)
+ 			AddPathCircle(- PathWidth * 1.5, 0, PathWidth + Margin, 0 , 360,  #PB_Path_Relative)
+ 			StrokePath(PathWidth, #PB_Path_Default)
+		Else
+			AddPathBox(Half, PathWidth, PathWidth * 3 , PathWidth, #PB_Path_Relative)
+	 		AddPathBox(0,0, PathWidth, PathWidth * 5, #PB_Path_Relative)
+	 		AddPathCircle(- PathWidth, PathWidth * 5, PathWidth * 2, 0 , 360,  #PB_Path_Relative)
+ 			FillPath(#PB_Path_Winding)
 		EndIf
 		
 		If Rotation
@@ -398,43 +461,12 @@ Module MaterialVector
 		ProcedureReturn #PB_Path_Default
 	EndProcedure	
 	
-	Procedure Accessibility(x, y, Size, FrontColor, BackColor, Style)
-		Protected PathWidth.i = Round(Size * 0.1, #PB_Round_Up), Margin.i = PathWidth * 0.5, Half.i = Size * 0.5
-		
-		MovePathCursor(x, y)
-		VectorSourceColor(FrontColor)
-		
-		Protected Rotation = Rotation(Style, Size)
-		
-		MovePathCursor(PathWidth, PathWidth * 3, #PB_Path_Relative)
-		AddPathLine(7 * PathWidth, 0, #PB_Path_Relative)
-		AddPathLine(0, PathWidth, #PB_Path_Relative)
-		AddPathLine(-2 * PathWidth, 0, #PB_Path_Relative)
-		AddPathLine(0, Half + PathWidth, #PB_Path_Relative)
-		AddPathLine(- PathWidth, 0, #PB_Path_Relative)
-		AddPathLine(0, -2.5 * PathWidth, #PB_Path_Relative)
-		AddPathLine(- PathWidth, 0, #PB_Path_Relative)
-		AddPathLine(0, 2.5 * PathWidth, #PB_Path_Relative)
-		AddPathLine(- PathWidth, 0, #PB_Path_Relative)
-		AddPathLine(0, - Half - PathWidth, #PB_Path_Relative)
-		AddPathLine(-2 * PathWidth, 0, #PB_Path_Relative)
-		
-		AddPathCircle(PathWidth * 3.5 , PathWidth * - 2.5, PathWidth, 0, 360, #PB_Path_Relative)
-		
-		FillPath(#PB_Path_Winding)
-		
-		If Rotation
-			RotateCoordinates(0, 0, -Rotation)
-		EndIf
-		
-		ProcedureReturn #PB_Path_Default
-	EndProcedure
-	
 	Function(#Accessibility) = @Accessibility()
 	Function(#Arrow) = @Arrow()
 	Function(#Chevron) = @Chevron()
 	Function(#Plus) = @Plus()
 	Function(#Minus) = @Minus()
+	Function(#Music) = @Music()
 	Function(#Video) = @Video()
 	Function(#Person) = @Person()
 	Function(#Pause) = @Pause()
@@ -451,7 +483,7 @@ Module MaterialVector
 		
 		Protected Rotation = Rotation(Style, Size) ;< call rotation for an automatic setup
 		
-		If Not Style & #Style_NoPath	;< if needed, draw your paths
+		If Not Style & #Style_NoPath ;< if needed, draw your paths
 			StrokePath(PathWidth, #PB_Path_Default)
 		EndIf
 		
@@ -517,13 +549,14 @@ CompilerIf #PB_Compiler_IsMainFile ;Gallery
 	AddGadgetItem(1, -1, "Arrow")
 	AddGadgetItem(1, -1, "Chevron")
 	AddGadgetItem(1, -1, "Minus")
+	AddGadgetItem(1, -1, "Music")
 	AddGadgetItem(1, -1, "Pause")
 	AddGadgetItem(1, -1, "Person")
 	AddGadgetItem(1, -1, "Play")
 	AddGadgetItem(1, -1, "Plus")
 	AddGadgetItem(1, -1, "Skip")
 	AddGadgetItem(1, -1, "Video")
- 	SetGadgetState(1, 0)
+ 	SetGadgetState(1, 4)
 	
 	Update()
 	
@@ -561,7 +594,7 @@ CompilerEndIf
 
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 422
-; FirstLine = 147
-; Folding = PVwz
+; CursorPosition = 259
+; FirstLine = 110
+; Folding = PDAn
 ; EnableXP
