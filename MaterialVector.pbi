@@ -14,8 +14,10 @@
 	Enumeration
 		#Accessibility
 		#Arrow
+		#Bento
 		#Camera
 		#Chevron
+		#Cube
 		#Minus
 		#Music
 		#Pause
@@ -46,8 +48,10 @@ Module MaterialVector
 	
 	Declare Accessibility(x, y, Size, FrontColor, BackColor, Style)
 	Declare Arrow(x, y, Size, FrontColor, BackColor, Style)
+	Declare Bento(x, y, Size, FrontColor, BackColor, Style)
 	Declare Camera(x, y, Size, FrontColor, BackColor, Style)
 	Declare Chevron(x, y, Size, FrontColor, BackColor, Style)
+	Declare Cube(x, y, Size, FrontColor, BackColor, Style)
 	Declare Minus(x, y, Size, FrontColor, BackColor, Style)
 	Declare Music(x, y, Size, FrontColor, BackColor, Style)
 	Declare Person(x, y, Size, FrontColor, BackColor, Style)
@@ -193,6 +197,34 @@ Module MaterialVector
 		ProcedureReturn #PB_Path_Default
 	EndProcedure
 	
+	Procedure Bento(x, y, Size, FrontColor, BackColor, Style)
+		Protected PathWidth.i = Round(Size * 0.1, #PB_Round_Up), Margin.i = PathWidth * 0.5, Half.i = Size * 0.5
+		
+		MovePathCursor(x, y)
+		VectorSourceColor(FrontColor)
+		
+		Protected Rotation = Rotation(Style, Size) ;< call rotation for an automatic setup
+		
+		MovePathCursor((Size - PathWidth * 6 - Margin * 2) * 0.5, (Size - (PathWidth * 4 + Margin)) * 0.5 , #PB_Path_Relative)
+		AddPathBox(0, 0, PathWidth * 2, PathWidth * 4 + Margin, #PB_Path_Relative)
+		MovePathCursor(PathWidth * 2 + Margin, 0, #PB_Path_Relative)
+		AddPathBox(0, 0, PathWidth * 4 + Margin, PathWidth * 2,  #PB_Path_Relative)
+		MovePathCursor(0, PathWidth * 2 + Margin, #PB_Path_Relative)
+		AddPathBox(0, 0, PathWidth * 2, PathWidth * 2,  #PB_Path_Relative)
+		MovePathCursor(PathWidth * 2 + Margin, 0, #PB_Path_Relative)
+		AddPathBox(0, 0, PathWidth * 2, PathWidth * 2,  #PB_Path_Relative)
+		
+		If Not Style & #Style_NoPath ;< if needed, draw your paths
+			FillPath()
+		EndIf
+		
+		If Rotation ;< return the output to it's original position
+			RotateCoordinates(0, 0, -Rotation)
+		EndIf
+		
+		ProcedureReturn #PB_Path_Default ; returns the correct path flaf for boxes/circled icons
+	EndProcedure
+	
 	Procedure Camera(x, y, Size, FrontColor, BackColor, Style)
 		Protected PathWidth.i = Round(Size * 0.1, #PB_Round_Up), Margin.i = PathWidth * 0.5, Half.i = Size * 0.5
 		
@@ -251,6 +283,38 @@ Module MaterialVector
 		EndIf
 		
 		ProcedureReturn #PB_Path_RoundCorner|#PB_Path_RoundEnd
+	EndProcedure
+	
+	Procedure Cube(x, y, Size, FrontColor, BackColor, Style)
+		Protected PathWidth.i = Round(Size * 0.1, #PB_Round_Up), Margin.i = PathWidth * 0.5,  Half.i = Size * 0.5
+		
+		MovePathCursor(x, y)
+		VectorSourceColor(FrontColor)
+		
+		Protected Rotation = Rotation(Style, Size) ;< call rotation for an automatic setup
+		
+		MovePathCursor(Half, PathWidth, #PB_Path_Relative)
+		AddPathLine(PathWidth * 3, PathWidth * 1.5, #PB_Path_Relative)
+		AddPathLine(-PathWidth * 3, PathWidth * 1.5, #PB_Path_Relative)
+		AddPathLine(-PathWidth * 3, -PathWidth * 1.5, #PB_Path_Relative)
+		ClosePath()
+		MovePathCursor(0, PathWidth * 3, #PB_Path_Relative)
+		
+		AddPathLine(0					, PathWidth * 4, #PB_Path_Relative)
+		AddPathLine(-PathWidth * 3		, -PathWidth * 1.5, #PB_Path_Relative)
+		AddPathLine(0					, -PathWidth * 4, #PB_Path_Relative)
+		MovePathCursor(PathWidth * 3	, PathWidth * 5.5, #PB_Path_Relative)
+		AddPathLine(PathWidth * 3		, -PathWidth * 1.5, #PB_Path_Relative)
+		AddPathLine(0					, -PathWidth * 4, #PB_Path_Relative)
+		
+		
+		StrokePath(PathWidth, #PB_Path_RoundCorner)
+		
+		If Rotation ;< return the output to it's original position
+			RotateCoordinates(0, 0, -Rotation)
+		EndIf
+		
+		ProcedureReturn #PB_Path_Default ; returns the correct path flaf for boxes/circled icons
 	EndProcedure
 	
 	Procedure Minus(x, y, Size, FrontColor, BackColor, Style)
@@ -500,8 +564,10 @@ Module MaterialVector
 	
 	Function(#Accessibility) = @Accessibility()
 	Function(#Arrow) = @Arrow()
+	Function(#Bento) = @Bento()
 	Function(#Camera) = @Camera()
 	Function(#Chevron) = @Chevron()
+	Function(#Cube) = @Cube()
 	Function(#Plus) = @Plus()
 	Function(#Minus) = @Minus()
 	Function(#Music) = @Music()
@@ -585,8 +651,10 @@ CompilerIf #PB_Compiler_IsMainFile ;Gallery
 	ComboBoxGadget(1, 10, 10, 120, 20)
 	AddGadgetItem(1, -1, "Accessibility")
 	AddGadgetItem(1, -1, "Arrow")
+	AddGadgetItem(1, -1, "Bento")
 	AddGadgetItem(1, -1, "Camera")
 	AddGadgetItem(1, -1, "Chevron")
+	AddGadgetItem(1, -1, "Cube")
 	AddGadgetItem(1, -1, "Minus")
 	AddGadgetItem(1, -1, "Music")
 	AddGadgetItem(1, -1, "Pause")
@@ -595,7 +663,7 @@ CompilerIf #PB_Compiler_IsMainFile ;Gallery
 	AddGadgetItem(1, -1, "Plus")
 	AddGadgetItem(1, -1, "Skip")
 	AddGadgetItem(1, -1, "Video")
- 	SetGadgetState(1, 11)
+ 	SetGadgetState(1, 2)
 	
 	Update()
 	
@@ -633,7 +701,7 @@ CompilerEndIf
 
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 477
-; FirstLine = 84
-; Folding = PBAP-
+; CursorPosition = 215
+; FirstLine = 53
+; Folding = LIAw9
 ; EnableXP
