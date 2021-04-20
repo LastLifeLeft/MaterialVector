@@ -22,6 +22,7 @@
 		#Music
 		#Pause
 		#Person
+		#Pen
 		#Play
 		#Plus
 		#Skip
@@ -55,6 +56,7 @@ Module MaterialVector
 	Declare Minus(x, y, Size, FrontColor, BackColor, Style)
 	Declare Music(x, y, Size, FrontColor, BackColor, Style)
 	Declare Person(x, y, Size, FrontColor, BackColor, Style)
+	Declare Pen(x, y, Size, FrontColor, BackColor, Style)
 	Declare Plus(x, y, Size, FrontColor, BackColor, Style)
 	Declare Pause(x, y, Size, FrontColor, BackColor, Style)
 	Declare Play(x, y, Size, FrontColor, BackColor, Style)
@@ -411,6 +413,67 @@ Module MaterialVector
 		ProcedureReturn #PB_Path_Default ; returns the correct path flaf for boxes/circled icons
 	EndProcedure
 	
+	Procedure Pen(x, y, Size, FrontColor, BackColor, Style) ; Really not material design complient as it is right now.
+		Protected PathWidth.i = Round(Size * 0.1, #PB_Round_Up), Diagonal = Size - 2 * PathWidth
+		
+		MovePathCursor(x, y)
+		VectorSourceColor(FrontColor)
+		
+		Protected Rotation = Rotation(Style, Size) ;< call rotation for an automatic setup
+		
+		; Eraser
+		If Style & #Style_Outline
+			MovePathCursor(Diagonal, 0, #PB_Relative)
+			AddPathLine(PathWidth* 2, PathWidth* 2, #PB_Relative)
+			AddPathLine(-PathWidth, PathWidth, #PB_Relative)
+			AddPathLine(-PathWidth* 2, -PathWidth* 2, #PB_Relative)
+			ClosePath()
+			FillPath()
+			
+			If Rotation ; Couldn't figure a way out of this since fillpath reset the cursor position...
+				RotateCoordinates(0, 0, -Rotation)
+			EndIf
+			
+			MovePathCursor(x, y)
+			Rotation(Style, Size)
+			MovePathCursor(Diagonal, 0, #PB_Relative)
+			AddPathLine(PathWidth* 2, PathWidth* 2, #PB_Relative)
+			AddPathLine(-PathWidth, PathWidth, #PB_Relative)
+			AddPathLine(-PathWidth* 2, -PathWidth* 2, #PB_Relative)
+			ClosePath()
+		Else
+			MovePathCursor(Diagonal, 0, #PB_Relative)
+			AddPathLine(PathWidth* 2, PathWidth* 2, #PB_Relative)
+			AddPathLine(-PathWidth* 1.5, PathWidth* 1.5, #PB_Relative)
+			AddPathLine(-PathWidth* 2, -PathWidth* 2, #PB_Relative)
+			ClosePath()
+		EndIf
+		
+		; Pen
+		Diagonal = Size - 4.5 * PathWidth
+		MovePathCursor( - 2 * PathWidth, PathWidth * 2, #PB_Relative)
+		AddPathLine(- Diagonal, Diagonal, #PB_Relative)
+		AddPathLine(0, PathWidth * 2, #PB_Relative)
+		AddPathLine(PathWidth * 2, 0, #PB_Relative)
+		AddPathLine(Diagonal, - Diagonal, #PB_Relative)
+		AddPathLine(- PathWidth * 2, - PathWidth * 2, #PB_Relative)
+		ClosePath()
+		
+		If Not Style & #Style_Outline
+			FillPath()
+		EndIf
+		
+		If Not Style & #Style_NoPath ;< if needed, draw your paths
+			StrokePath(PathWidth, #PB_Path_RoundCorner)
+		EndIf
+		
+		If Rotation ;< return the output to it's original position
+			RotateCoordinates(0, 0, -Rotation)
+		EndIf
+		
+		ProcedureReturn #PB_Path_Default ; returns the correct path flaf for boxes/circled icons
+	EndProcedure
+	
 	Procedure Plus(x, y, Size, FrontColor, BackColor, Style)
 		Protected PathWidth.i = Round(Size * 0.1, #PB_Round_Up),  Half.i = Size * 0.5
 		
@@ -572,6 +635,7 @@ Module MaterialVector
 	Function(#Minus) = @Minus()
 	Function(#Music) = @Music()
 	Function(#Person) = @Person()
+	Function(#Pen) = @Pen()
 	Function(#Pause) = @Pause()
 	Function(#Play) = @Play()
 	Function(#Skip) = @Skip()
@@ -659,11 +723,12 @@ CompilerIf #PB_Compiler_IsMainFile ;Gallery
 	AddGadgetItem(1, -1, "Music")
 	AddGadgetItem(1, -1, "Pause")
 	AddGadgetItem(1, -1, "Person")
+	AddGadgetItem(1, -1, "Pen")
 	AddGadgetItem(1, -1, "Play")
 	AddGadgetItem(1, -1, "Plus")
 	AddGadgetItem(1, -1, "Skip")
 	AddGadgetItem(1, -1, "Video")
- 	SetGadgetState(1, 2)
+ 	SetGadgetState(1, 10)
 	
 	Update()
 	
@@ -701,7 +766,7 @@ CompilerEndIf
 
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 215
-; FirstLine = 53
-; Folding = LIAw9
+; CursorPosition = 451
+; FirstLine = 76
+; Folding = LAQQ6
 ; EnableXP
