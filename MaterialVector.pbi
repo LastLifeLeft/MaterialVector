@@ -329,12 +329,12 @@ Module MaterialVector
 		
 		Protected Rotation = Rotation(Style, Size)
 		
-		MovePathCursor(PathWidth + Margin * 2, PathWidth * 2, #PB_Path_Relative)
+		MovePathCursor(Margin * 2, PathWidth * 2, #PB_Path_Relative)
 		AddPathLine(- Margin * 0.5, Margin * 1.5, #PB_Path_Relative)
-		AddPathLine(0, Half - PathWidth, #PB_Path_Relative)
-		AddPathLine(Size - Margin * 2 - PathWidth * 2, 0, #PB_Path_Relative)
-		AddPathLine(0, - Half + PathWidth, #PB_Path_Relative)
-		AddPathLine(- PathWidth * 3, 0, #PB_Path_Relative)
+		AddPathLine(0, Half, #PB_Path_Relative)
+		AddPathLine(Size - Margin * 2, 0, #PB_Path_Relative)
+		AddPathLine(0, - Half, #PB_Path_Relative)
+		AddPathLine(- Half, 0, #PB_Path_Relative)
 		AddPathLine( - Margin * 0.5, - Margin * 1.5, #PB_Path_Relative)
 		ClosePath()
 		
@@ -803,6 +803,7 @@ CompilerEndIf
 
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 39
-; Folding = CAAAx
+; CursorPosition = 336
+; FirstLine = 6
+; Folding = CACAx
 ; EnableXP
