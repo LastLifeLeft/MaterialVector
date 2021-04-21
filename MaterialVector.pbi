@@ -334,7 +334,7 @@ Module MaterialVector
 		AddPathLine(0, Half - PathWidth, #PB_Path_Relative)
 		AddPathLine(Size - Margin * 2 - PathWidth * 2, 0, #PB_Path_Relative)
 		AddPathLine(0, - Half + PathWidth, #PB_Path_Relative)
-		AddPathLine(- Size + Margin * 4 + PathWidth * 4, 0, #PB_Path_Relative)
+		AddPathLine(- PathWidth * 3, 0, #PB_Path_Relative)
 		AddPathLine( - Margin * 0.5, - Margin * 1.5, #PB_Path_Relative)
 		ClosePath()
 		
@@ -803,7 +803,6 @@ CompilerEndIf
 
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 336
-; FirstLine = 18
-; Folding = CAAAz
+; CursorPosition = 39
+; Folding = CAAAx
 ; EnableXP
