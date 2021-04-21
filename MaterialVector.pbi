@@ -18,6 +18,7 @@
 		#Camera
 		#Chevron
 		#Cube
+		#Folder
 		#Minus
 		#Music
 		#Pause
@@ -53,6 +54,7 @@ Module MaterialVector
 	Declare Camera(x, y, Size, FrontColor, BackColor, Style)
 	Declare Chevron(x, y, Size, FrontColor, BackColor, Style)
 	Declare Cube(x, y, Size, FrontColor, BackColor, Style)
+	Declare Folder(x, y, Size, FrontColor, BackColor, Style)
 	Declare Minus(x, y, Size, FrontColor, BackColor, Style)
 	Declare Music(x, y, Size, FrontColor, BackColor, Style)
 	Declare Person(x, y, Size, FrontColor, BackColor, Style)
@@ -317,6 +319,39 @@ Module MaterialVector
 		EndIf
 		
 		ProcedureReturn #PB_Path_Default ; returns the correct path flaf for boxes/circled icons
+	EndProcedure
+	
+	Procedure Folder(x, y, Size, FrontColor, BackColor, Style)
+		Protected PathWidth.i = Round(Size * 0.1, #PB_Round_Up), Margin.i = PathWidth * 0.5,  Half.i = Size * 0.5
+		
+		MovePathCursor(x, y)
+		VectorSourceColor(FrontColor)
+		
+		Protected Rotation = Rotation(Style, Size)
+		
+		MovePathCursor(PathWidth + Margin * 2, PathWidth * 2, #PB_Path_Relative)
+		AddPathLine(- Margin * 0.5, Margin * 1.5, #PB_Path_Relative)
+		AddPathLine(0, Half - PathWidth, #PB_Path_Relative)
+		AddPathLine(Size - Margin * 2 - PathWidth * 2, 0, #PB_Path_Relative)
+		AddPathLine(0, - Half + PathWidth, #PB_Path_Relative)
+		AddPathLine(- Size + Margin * 4 + PathWidth * 4, 0, #PB_Path_Relative)
+		AddPathLine( - Margin * 0.5, - Margin * 1.5, #PB_Path_Relative)
+		ClosePath()
+		
+		If Not Style & #Style_Outline
+ 			FillPath(#PB_Path_Preserve)
+ 		EndIf
+ 		
+		If Not Style & #Style_NoPath ;< if needed, draw your paths
+			StrokePath(PathWidth, #PB_Path_RoundCorner)
+		EndIf
+		
+		
+		If Rotation
+			RotateCoordinates(0, 0, -Rotation)
+		EndIf
+		
+		ProcedureReturn #PB_Path_RoundCorner; returns the correct path flaf for boxes/circled icons
 	EndProcedure
 	
 	Procedure Minus(x, y, Size, FrontColor, BackColor, Style)
@@ -631,6 +666,7 @@ Module MaterialVector
 	Function(#Camera) = @Camera()
 	Function(#Chevron) = @Chevron()
 	Function(#Cube) = @Cube()
+	Function(#Folder) = @Folder()
 	Function(#Plus) = @Plus()
 	Function(#Minus) = @Minus()
 	Function(#Music) = @Music()
@@ -719,6 +755,7 @@ CompilerIf #PB_Compiler_IsMainFile ;Gallery
 	AddGadgetItem(1, -1, "Camera")
 	AddGadgetItem(1, -1, "Chevron")
 	AddGadgetItem(1, -1, "Cube")
+	AddGadgetItem(1, -1, "Folder")
 	AddGadgetItem(1, -1, "Minus")
 	AddGadgetItem(1, -1, "Music")
 	AddGadgetItem(1, -1, "Pause")
@@ -728,7 +765,7 @@ CompilerIf #PB_Compiler_IsMainFile ;Gallery
 	AddGadgetItem(1, -1, "Plus")
 	AddGadgetItem(1, -1, "Skip")
 	AddGadgetItem(1, -1, "Video")
- 	SetGadgetState(1, 10)
+ 	SetGadgetState(1, 6)
 	
 	Update()
 	
@@ -766,7 +803,7 @@ CompilerEndIf
 
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 451
-; FirstLine = 76
-; Folding = LAQQ6
+; CursorPosition = 336
+; FirstLine = 18
+; Folding = CAAAz
 ; EnableXP
