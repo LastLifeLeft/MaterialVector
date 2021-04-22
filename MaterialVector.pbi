@@ -13,6 +13,7 @@
 	
 	Enumeration
 		#Accessibility
+		#AllOut
 		#Arrow
 		#Bento
 		#Camera
@@ -49,6 +50,7 @@ Module MaterialVector
 	Declare Rotation(Style, Size)
 	
 	Declare Accessibility(x, y, Size, FrontColor, BackColor, Style)
+	Declare AllOut(x, y, Size, FrontColor, BackColor, Style)
 	Declare Arrow(x, y, Size, FrontColor, BackColor, Style)
 	Declare Bento(x, y, Size, FrontColor, BackColor, Style)
 	Declare Camera(x, y, Size, FrontColor, BackColor, Style)
@@ -169,6 +171,47 @@ Module MaterialVector
 		AddPathCircle(PathWidth * 3.5 , PathWidth * - 2.5, PathWidth, 0, 360, #PB_Path_Relative)
 		
 		FillPath(#PB_Path_Winding)
+		
+		If Rotation
+			RotateCoordinates(0, 0, -Rotation)
+		EndIf
+		
+		ProcedureReturn #PB_Path_Default
+	EndProcedure
+	
+	Procedure AllOut(x, y, Size, FrontColor, BackColor, Style)
+		Protected PathWidth.i = Round(Size * 0.1, #PB_Round_Up), Margin.i = PathWidth * 0.5, Half.i = Size * 0.5
+		
+		MovePathCursor(x, y)
+		VectorSourceColor(FrontColor)
+		
+		Protected Rotation = Rotation(Style, Size)
+		AddPathLine(0, PathWidth, #PB_Path_Relative)
+		AddPathLine(PathWidth, - PathWidth, #PB_Path_Relative)
+		ClosePath()
+		
+		MovePathCursor(Size - PathWidth, 0, #PB_Path_Relative)
+		AddPathLine(PathWidth, PathWidth, #PB_Path_Relative)
+		AddPathLine(0, -PathWidth, #PB_Path_Relative)
+		ClosePath()
+		
+		MovePathCursor(PathWidth, Size - PathWidth, #PB_Path_Relative)
+		AddPathLine(-PathWidth, PathWidth, #PB_Path_Relative)
+		AddPathLine(PathWidth, 0, #PB_Path_Relative)
+		ClosePath()
+		
+		MovePathCursor(PathWidth - Size, PathWidth, #PB_Path_Relative)
+		AddPathLine(-PathWidth, 0, #PB_Path_Relative)
+		AddPathLine(0, -PathWidth, #PB_Path_Relative)
+		ClosePath()
+		
+		AddPathCircle(Half - PathWidth, - Half, Size * 0.4, 0, 360, #PB_Path_Relative)
+		
+		If Not  Style & #Style_Outline
+			FillPath(#PB_Path_Preserve)
+		EndIf
+		
+		StrokePath(PathWidth, #PB_Path_Default)
 		
 		If Rotation
 			RotateCoordinates(0, 0, -Rotation)
@@ -661,6 +704,7 @@ Module MaterialVector
 	EndProcedure
 	
 	Function(#Accessibility) = @Accessibility()
+	Function(#AllOut) = @AllOut()
 	Function(#Arrow) = @Arrow()
 	Function(#Bento) = @Bento()
 	Function(#Camera) = @Camera()
@@ -750,6 +794,7 @@ CompilerIf #PB_Compiler_IsMainFile ;Gallery
 	
 	ComboBoxGadget(1, 10, 10, 120, 20)
 	AddGadgetItem(1, -1, "Accessibility")
+	AddGadgetItem(1, -1, "AllOut")
 	AddGadgetItem(1, -1, "Arrow")
 	AddGadgetItem(1, -1, "Bento")
 	AddGadgetItem(1, -1, "Camera")
@@ -765,7 +810,7 @@ CompilerIf #PB_Compiler_IsMainFile ;Gallery
 	AddGadgetItem(1, -1, "Plus")
 	AddGadgetItem(1, -1, "Skip")
 	AddGadgetItem(1, -1, "Video")
- 	SetGadgetState(1, 6)
+ 	SetGadgetState(1, 1)
 	
 	Update()
 	
@@ -803,7 +848,7 @@ CompilerEndIf
 
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 336
-; FirstLine = 6
-; Folding = CACAx
+; CursorPosition = 214
+; FirstLine = 81
+; Folding = LEABh
 ; EnableXP
