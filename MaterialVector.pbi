@@ -20,6 +20,7 @@
 		#Chevron
 		#Cube
 		#Folder
+		#Image
 		#Minus
 		#Music
 		#Pause
@@ -400,6 +401,51 @@ Module MaterialVector
 		ProcedureReturn #PB_Path_RoundCorner; returns the correct path flaf for boxes/circled icons
 	EndProcedure
 	
+	Procedure Image(x, y, Size, FrontColor, BackColor, Style)
+		Protected NewSize = Size * 0.9,  Offset.f = (Size - NewSize) * 0.5
+		Size = NewSize
+		Protected PathWidth.i = Round(Size * 0.1, #PB_Round_Up), Margin = PathWidth * 0.5, MountainWidth = (Size - PathWidth * 2 - Margin * 2) / 6
+		
+		MovePathCursor(x + Offset, y + Offset)
+		VectorSourceColor(FrontColor)
+		
+		Protected Rotation = Rotation(Style, Size)
+		
+		If Not Style & #Style_Outline
+			AddPathRoundedBox(0, 0, Size, Size, PathWidth, #PB_Path_Relative)
+			
+			MovePathCursor(PathWidth + Margin, Size - (PathWidth * 2), #PB_Path_Relative)
+			AddPathLine(MountainWidth, - PathWidth, #PB_Path_Relative)
+			AddPathLine(MountainWidth, PathWidth, #PB_Path_Relative)
+			AddPathLine(MountainWidth * 2, - PathWidth * 2, #PB_Path_Relative)
+			AddPathLine(MountainWidth * 2,  PathWidth * 2, #PB_Path_Relative)
+			AddPathLine(-6  * MountainWidth,  0, #PB_Path_Relative)
+			ClosePath()
+			
+			FillPath()
+		Else
+			AddPathRoundedBox(0, 0, Size, Size, PathWidth, #PB_Path_Relative)
+			
+			AddPathBox(PathWidth, PathWidth, Size - PathWidth * 2, Size - PathWidth * 2, #PB_Path_Relative)
+			
+			MovePathCursor(Margin, Size - (PathWidth * 3), #PB_Path_Relative)
+			AddPathLine(MountainWidth, - PathWidth * 1.2, #PB_Path_Relative)
+			AddPathLine(MountainWidth, PathWidth * 1.2, #PB_Path_Relative)
+			AddPathLine(MountainWidth * 2, - PathWidth * 2.4, #PB_Path_Relative)
+			AddPathLine(MountainWidth * 2,  PathWidth * 2.4, #PB_Path_Relative)
+			AddPathLine(-6  * MountainWidth,  0, #PB_Path_Relative)
+			ClosePath()
+			
+			FillPath()
+		EndIf
+		
+		If Rotation
+			RotateCoordinates(0, 0, -Rotation)
+		EndIf
+		
+		ProcedureReturn #PB_Path_RoundCorner
+	EndProcedure
+	
 	Procedure Minus(x, y, Size, FrontColor, BackColor, Style)
 		Protected PathWidth.i = Round(Size * 0.1, #PB_Round_Up), Half.i = Size * 0.5
 		
@@ -714,6 +760,7 @@ Module MaterialVector
 	Function(#Chevron) = @Chevron()
 	Function(#Cube) = @Cube()
 	Function(#Folder) = @Folder()
+	Function(#Image) = @Image()
 	Function(#Plus) = @Plus()
 	Function(#Minus) = @Minus()
 	Function(#Music) = @Music()
@@ -804,6 +851,7 @@ CompilerIf #PB_Compiler_IsMainFile ;Gallery
 	AddGadgetItem(1, -1, "Chevron")
 	AddGadgetItem(1, -1, "Cube")
 	AddGadgetItem(1, -1, "Folder")
+	AddGadgetItem(1, -1, "Image")
 	AddGadgetItem(1, -1, "Minus")
 	AddGadgetItem(1, -1, "Music")
 	AddGadgetItem(1, -1, "Pause")
@@ -813,7 +861,7 @@ CompilerIf #PB_Compiler_IsMainFile ;Gallery
 	AddGadgetItem(1, -1, "Plus")
 	AddGadgetItem(1, -1, "Skip")
 	AddGadgetItem(1, -1, "Video")
- 	SetGadgetState(1, 1)
+ 	SetGadgetState(1, 8)
 	
 	Update()
 	
@@ -851,7 +899,7 @@ CompilerEndIf
 
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 184
-; FirstLine = 66
-; Folding = LAAAh
+; CursorPosition = 314
+; FirstLine = 102
+; Folding = LEIAM-
 ; EnableXP
