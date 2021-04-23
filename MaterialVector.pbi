@@ -180,12 +180,15 @@ Module MaterialVector
 	EndProcedure
 	
 	Procedure AllOut(x, y, Size, FrontColor, BackColor, Style)
-		Protected PathWidth.i = Round(Size * 0.1, #PB_Round_Up), Margin.i = PathWidth * 0.5, Half.i = Size * 0.5
+		Protected NewSize = Size * 0.8,  Offset = (Size - NewSize) * 0.5
+		Size = NewSize
+		Protected PathWidth.i = Round(Size * 0.1, #PB_Round_Up)
 		
-		MovePathCursor(x, y)
+		MovePathCursor(x + Offset, y + Offset)
 		VectorSourceColor(FrontColor)
 		
 		Protected Rotation = Rotation(Style, Size)
+		
 		AddPathLine(0, PathWidth, #PB_Path_Relative)
 		AddPathLine(PathWidth, - PathWidth, #PB_Path_Relative)
 		ClosePath()
@@ -205,7 +208,7 @@ Module MaterialVector
 		AddPathLine(0, -PathWidth, #PB_Path_Relative)
 		ClosePath()
 		
-		AddPathCircle(Half - PathWidth, - Half, Size * 0.4, 0, 360, #PB_Path_Relative)
+		AddPathCircle(Size * 0.5 - PathWidth, - Size * 0.5, Size * 0.38, 0, 360, #PB_Path_Relative)
 		
 		If Not  Style & #Style_Outline
 			FillPath(#PB_Path_Preserve)
@@ -848,7 +851,7 @@ CompilerEndIf
 
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 214
-; FirstLine = 81
-; Folding = LEABh
+; CursorPosition = 184
+; FirstLine = 66
+; Folding = LAAAh
 ; EnableXP
