@@ -20,6 +20,7 @@
 		#Chevron
 		#Cube
 		#Folder
+		#FolderOpen
 		#Image
 		#Minus
 		#Music
@@ -58,6 +59,7 @@ Module MaterialVector
 	Declare Chevron(x, y, Size, FrontColor, BackColor, Style)
 	Declare Cube(x, y, Size, FrontColor, BackColor, Style)
 	Declare Folder(x, y, Size, FrontColor, BackColor, Style)
+	Declare FolderOpen(x, y, Size, FrontColor, BackColor, Style)
 	Declare Minus(x, y, Size, FrontColor, BackColor, Style)
 	Declare Music(x, y, Size, FrontColor, BackColor, Style)
 	Declare Person(x, y, Size, FrontColor, BackColor, Style)
@@ -129,7 +131,7 @@ Module MaterialVector
 	
 	; Private procedures
 	;Tools
-	Procedure Rotation(Style, Size) ; There has to be a better solution, but I can't figure it out with sin and cos... This is most likely a brainfart, come back to it later
+	Procedure Rotation(Style, Size) ; There has to be a better solution, but I can't figure it out with trigonometry... This is most likely a brainfart, come back to it later
 		Protected Rotation, RotationOffsetX, RotationOffsetY
 		If Style & #style_rotate_90
 			Rotation = 90
@@ -376,13 +378,13 @@ Module MaterialVector
 		
 		Protected Rotation = Rotation(Style, Size)
 		
-		MovePathCursor(Margin * 2, PathWidth * 2, #PB_Path_Relative)
-		AddPathLine(- Margin * 0.5, Margin * 1.5, #PB_Path_Relative)
-		AddPathLine(0, Half, #PB_Path_Relative)
+		MovePathCursor(Margin * 2, Round(PathWidth * 1.4, #PB_Round_Nearest), #PB_Path_Relative)
+		AddPathLine(- Round(Margin * 0.5, #PB_Round_Nearest), Round(Margin * 1.5, #PB_Round_Nearest), #PB_Path_Relative)
+		AddPathLine(0, Round(Size * 0.6, #PB_Round_Nearest), #PB_Path_Relative)
 		AddPathLine(Size - Margin * 2, 0, #PB_Path_Relative)
-		AddPathLine(0, - Half, #PB_Path_Relative)
+		AddPathLine(0, - Round(Size * 0.6, #PB_Round_Nearest), #PB_Path_Relative)
 		AddPathLine(- Half, 0, #PB_Path_Relative)
-		AddPathLine( - Margin * 0.5, - Margin * 1.5, #PB_Path_Relative)
+		AddPathLine( - Round(Margin * 0.5, #PB_Round_Nearest), - Round(Margin * 1.5, #PB_Round_Nearest), #PB_Path_Relative)
 		ClosePath()
 		
 		If Not Style & #Style_Outline
@@ -393,12 +395,46 @@ Module MaterialVector
 			StrokePath(PathWidth, #PB_Path_RoundCorner)
 		EndIf
 		
+		If Rotation
+			RotateCoordinates(0, 0, -Rotation)
+		EndIf
+		
+		ProcedureReturn #PB_Path_RoundCorner
+	EndProcedure
+	
+	Procedure FolderOpen(x, y, Size, FrontColor, BackColor, Style)
+		Protected PathWidth.i = Round(Size * 0.1, #PB_Round_Up), Margin.i = PathWidth * 0.5,  Half.i = Size * 0.5
+		
+		MovePathCursor(x, y)
+		VectorSourceColor(FrontColor)
+		
+		Protected Rotation = Rotation(Style, Size)
+		
+		MovePathCursor(Margin * 2, Round(PathWidth * 1.4, #PB_Round_Nearest), #PB_Path_Relative)
+		SaveVectorState()
+		AddPathLine(- Round(Margin * 0.5, #PB_Round_Nearest), Round(Margin * 1.5, #PB_Round_Nearest), #PB_Path_Relative)
+		AddPathLine( Size * 0.35, 0, #PB_Path_Relative)
+		AddPathLine( - Round(Margin * 0.5, #PB_Round_Nearest), - Round(Margin * 1.5, #PB_Round_Nearest), #PB_Path_Relative)
+		ClosePath()
+		
+		RestoreVectorState()
+		AddPathLine(- Round(Margin * 0.5, #PB_Round_Nearest), Round(Margin * 1.5, #PB_Round_Nearest), #PB_Path_Relative)
+		AddPathLine(0, Round(Size * 0.6, #PB_Round_Nearest), #PB_Path_Relative)
+		AddPathLine(Size - Margin * 2, 0, #PB_Path_Relative)
+		AddPathLine(0, - Round(Size * 0.6, #PB_Round_Nearest), #PB_Path_Relative)
+		AddPathLine(- Half, 0, #PB_Path_Relative)
+		AddPathLine( - Round(Margin * 0.5, #PB_Round_Nearest), - Round(Margin * 1.5, #PB_Round_Nearest), #PB_Path_Relative)
+		ClosePath()
+ 		
+		If Not Style & #Style_NoPath
+			StrokePath(PathWidth, #PB_Path_RoundCorner)
+		EndIf
 		
 		If Rotation
 			RotateCoordinates(0, 0, -Rotation)
 		EndIf
 		
-		ProcedureReturn #PB_Path_RoundCorner; returns the correct path flaf for boxes/circled icons
+		ProcedureReturn #PB_Path_RoundCorner
 	EndProcedure
 	
 	Procedure Image(x, y, Size, FrontColor, BackColor, Style)
@@ -610,7 +646,6 @@ Module MaterialVector
 		Protected Rotation = Rotation(Style, Size)
 		
 		If Style & #Style_Outline
-			
 			MovePathCursor(Half - PathWidth, PathWidth, #PB_Path_Relative)
 			AddPathLine(0, Half - PathWidth * 2, #PB_Path_Relative)
 			AddPathLine(PathWidth * 2 - Half, 0, #PB_Path_Relative)
@@ -627,7 +662,6 @@ Module MaterialVector
 			
 			StrokePath(PathWidth, #PB_Path_Default)
 		Else
-			
 			MovePathCursor(Half, PathWidth, #PB_Path_Relative)
 			AddPathLine(0, Size - PathWidth * 2, #PB_Path_Relative)
 			
@@ -760,6 +794,7 @@ Module MaterialVector
 	Function(#Chevron) = @Chevron()
 	Function(#Cube) = @Cube()
 	Function(#Folder) = @Folder()
+	Function(#FolderOpen) = @FolderOpen()
 	Function(#Image) = @Image()
 	Function(#Plus) = @Plus()
 	Function(#Minus) = @Minus()
@@ -851,6 +886,7 @@ CompilerIf #PB_Compiler_IsMainFile ;Gallery
 	AddGadgetItem(1, -1, "Chevron")
 	AddGadgetItem(1, -1, "Cube")
 	AddGadgetItem(1, -1, "Folder")
+	AddGadgetItem(1, -1, "Folder Open")
 	AddGadgetItem(1, -1, "Image")
 	AddGadgetItem(1, -1, "Minus")
 	AddGadgetItem(1, -1, "Music")
@@ -861,7 +897,7 @@ CompilerIf #PB_Compiler_IsMainFile ;Gallery
 	AddGadgetItem(1, -1, "Plus")
 	AddGadgetItem(1, -1, "Skip")
 	AddGadgetItem(1, -1, "Video")
- 	SetGadgetState(1, 8)
+ 	SetGadgetState(1, 9)
 	
 	Update()
 	
@@ -899,7 +935,7 @@ CompilerEndIf
 
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 314
-; FirstLine = 102
-; Folding = LEIAM-
+; CursorPosition = 22
+; FirstLine = 16
+; Folding = LAAIY+
 ; EnableXP
